@@ -1,3 +1,13 @@
-screen_res = (1280, 720)
+SCREEN_RES = (1280, 720)
+
+SCREEN_X = SCREEN_RES[0]
+SCREEN_Y = SCREEN_RES[1]
+
 
 BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
+BOID_WIDTH = 30
+BOID_HEIGHT = 50
+
+BOID_SHAPE = [(15, 0), (0, 50), (15, 45), (30, 50), (15, 0)]

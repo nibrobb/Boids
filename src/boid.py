@@ -7,12 +7,13 @@ class Boid(pygame.sprite.Sprite):
         self.color = color
         self.scale = scale
 
-        self.width = self.height = (10 * scale)
+        self.width = BOID_WIDTH
+        self.height = BOID_HEIGHT
 
         self.image = pygame.Surface([self.width, self.height])
         self.image.fill(BLACK)
         self.image.set_colorkey(BLACK)
 
-        pygame.draw.rect(self.image, color, [0, 0, self.width, self.height])
+        pygame.draw.polygon(self.image, self.color, BOID_SHAPE)
 
         self.rect = self.image.get_rect()

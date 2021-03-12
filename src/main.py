@@ -5,7 +5,7 @@ from boid import Boid
 class Game:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode(screen_res)
+        self.screen = pygame.display.set_mode(SCREEN_RES)
         self.clock = pygame.time.Clock()
 
         while True:
@@ -18,8 +18,9 @@ class Game:
             # Game logic goes here
             all_sprites = pygame.sprite.Group()
 
-            boid = Boid((255, 255, 255), 5)
-            boid.rect.x, boid.rect.y = screen_res[0] // 2, screen_res[1] // 2
+            boid = Boid((WHITE), 5)
+            boid.rect.x, boid.rect.y = (SCREEN_RES[0] / 2) - boid.width/2, (SCREEN_RES[1] / 2) - boid.height / 2
+            pygame.draw.line(self.screen, (255, 255, 255), (SCREEN_RES[0]/2, 0), (SCREEN_RES[0]/2, SCREEN_RES[1]), 1)
 
             all_sprites.add(boid)
             all_sprites.update()
