@@ -19,7 +19,7 @@ class Game:
             all_sprites = pygame.sprite.Group()
 
             boid = Boid((WHITE), 5)
-            boid.rect.x, boid.rect.y = (SCREEN_RES[0] / 2) - boid.width/2, (SCREEN_RES[1] / 2) - boid.height / 2
+            boid.rect.x, boid.rect.y = (SCREEN_X / 2) - boid.width/2, (SCREEN_Y / 2) - boid.height / 2
             pygame.draw.line(self.screen, (255, 255, 255), (SCREEN_RES[0]/2, 0), (SCREEN_RES[0]/2, SCREEN_RES[1]), 1)
 
             all_sprites.add(boid)
