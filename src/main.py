@@ -1,34 +1,55 @@
 import pygame
 from config import *
 from boid import Boid
+import random as rand
 
-class Game:
+class Boids:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode(SCREEN_RES)
         self.clock = pygame.time.Clock()
 
+        all_sprites = pygame.sprite.Group()
+        self.spawn_boids(100, all_sprites)
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-            
+
             self.screen.fill((12, 23, 34))
 
             # Game logic goes here
-            all_sprites = pygame.sprite.Group()
 
-            boid = Boid((WHITE), 5)
-            boid.rect.x, boid.rect.y = (SCREEN_X / 2) - boid.width/2, (SCREEN_Y / 2) - boid.height / 2
-            pygame.draw.line(self.screen, (255, 255, 255), (SCREEN_RES[0]/2, 0), (SCREEN_RES[0]/2, SCREEN_RES[1]), 1)
+            def draw_heading_vector(boid : Boid, vec : pygame.Vector2, color):
+                pygame.draw.line(self.screen, color,
+                                (boid.pos.x, boid.pos.y),
+                                (boid.pos.x + vec.x * 50,
+                                boid.pos.y + vec.y * 50), 3)
+            
+            boids = all_sprites.sprites()
+            for boid in boids:
+                draw_heading_vector(boid, boid.direction, WHITE)
 
-            all_sprites.add(boid)
+            # Three rules of boids: Separation, Alignment, Cohesion
+                # 1) separation: steer to avoid crowding local flockmates
+                # 2) alignment: steer towards the average heading of local flockmates
+                # 3) cohesion: steer to move towards the average position (center of mass) of local flockmates
+            
             all_sprites.update()
-
             all_sprites.draw(self.screen)
-            self.clock.tick(60)
+            
+            self.clock.tick(10)
             pygame.display.flip()
 
 
+    def spawn_boids(self, n_boids, sprite_group):
+        for i in range(n_boids):
+            boid = Boid(WHITE, (rand.randint(0, SCREEN_X), rand.randint(0, SCREEN_Y )), (rand.random(), rand.random()) )
+            # boid.set_pos((rand.randint(0, SCREEN_X) - boid.width/2, rand.randint(0, SCREEN_Y) - boid.height/2))
+            # boid.velocity = 5
+            sprite_group.add(boid)
+
+
 if __name__ == '__main__':
-    Game = Game()
+    boids = Boids()
