@@ -3,6 +3,7 @@ import pygame
 from config import *
 from boid import Boid
 
+
 class Boids:
     def __init__(self):
         pygame.init()
@@ -24,10 +25,10 @@ class Boids:
                     pygame.quit()
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    make_boid(pos)
+                    spawn_boid_on_click(pos)
 
-            def make_boid(pos):
-                boid = Boid(WHITE, pos, (rand.randint(-5, 5), rand.randint(-5, 5)) )
+            def spawn_boid_on_click(pos):
+                boid = Boid(WHITE, pos, (RNG_not_zero(-5, 5), RNG_not_zero(-5, 5)) )
                 all_sprites.add(boid)
 
 
@@ -35,9 +36,6 @@ class Boids:
 
             # Game logic goes here
 
-            boids = all_sprites.sprites()
-            for boid in boids:
-                draw_heading_vector(boid, boid.direction, (0,0,255))
 
             # Three rules of boids: Separation, Alignment, Cohesion
                 # 1) separation: steer to avoid crowding local flockmates
@@ -48,7 +46,8 @@ class Boids:
             all_sprites.draw(self.screen)
             
             self.clock.tick(60)
-            pygame.display.flip()
+            # pygame.display.flip()
+            pygame.display.update()
 
 
     def spawn_boids(self, n_boids : int, sprite_group : pygame.sprite.Group):
@@ -59,6 +58,11 @@ class Boids:
                                 rand.randint(-5, 5)))
             sprite_group.add(boid)
 
+def RNG_not_zero(a, b):
+    rng = rand.randint(a, b)
+    if rng == 0:
+        rng = 1
+    return rng
 
 if __name__ == '__main__':
     start = Boids()
