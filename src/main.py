@@ -1,4 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import random as rand
+from typing import Tuple
 import pygame
 from config import *
 from boid import Boid
@@ -10,23 +14,27 @@ class Game:
         self.screen = pygame.display.set_mode(SCREEN_RES)
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
-        self.load_boid()
-
 
     def initialize(self):
+        """ Denne metoden setter opp alt som trengs for å kjøre simulasjonen """
         self.load_boid()
         self.all_sprites = pygame.sprite.Group()
 
     def load_boid(self):
-        self.boid_img = pygame.Surface([BOID_WIDTH, BOID_HEIGHT])
-        self.boid_img.fill(BLACK)
-        self.boid_img.set_colorkey(BLACK)
-        pygame.draw.polygon(self.boid_img, WHITE, BOID_SHAPE)
+        """ Laster inn en egendefinert boid polygon """
+
+        # Lager en overflate for å tegne boiden på og setter bakgrunnsfargen gjennomsiktig.
+        self.boid_img = pygame.Surface([BOID_WIDTH, BOID_HEIGHT], pygame.SRCALPHA)
+
+        # Tegner en polygon fra punktene definert i config.py med heldekkende fyll
+        pygame.draw.polygon(self.boid_img, WHITE, BOID_SHAPE, 0)
 
     def run(self):
+        """ Kjøres ved start, holdes kjørende til brukeren avslutter """
         self.running = True
+        self.spawn_boids(100)
+
         while self.running:
-            # self.spawn_boids(100, all_sprites)
 
             # Game logic goes here
 
@@ -54,7 +62,7 @@ class Game:
     def draw(self):
         self.screen.fill(BG_COLOR)
         for sprite in self.all_sprites:
-            self.screen.blit(sprite.image, sprite.pos)
+            self.screen.blit(sprite.image, (sprite.rect.x, sprite.rect.y))
         pygame.display.flip()
 
 
@@ -64,15 +72,15 @@ class Game:
 
     def spawn_boids(self, n_boids : int):
         for i in range(n_boids):
-            boid = Boid(self, (RNG_not_zero(0, SCREEN_X),
-                                RNG_not_zero(0, SCREEN_Y)))
+            boid = Boid(self, (rand.randint(0, SCREEN_X),
+                               rand.randint(0, SCREEN_Y)))
             self.all_sprites.add(boid)
 
-    def draw_heading_vector(self, boid : Boid, vec : pygame.Vector2, color : (int, int, int)):
-        pygame.draw.line(self.screen, color,
+    def draw_heading_vector(self, boid : Boid, vec):
+        pygame.draw.line(self.screen, (255,0,0),
                         (boid.pos.x, boid.pos.y),
-                        (boid.pos.x + vec.x * 50,
-                        boid.pos.y + vec.y * 50), 3)
+                        (boid.pos.x + vec.x,
+                        boid.pos.y + vec.y), 3)
 
 def RNG_not_zero(a, b):
     rng = rand.randint(a, b)
