@@ -24,12 +24,12 @@ class Boid(pygame.sprite.Sprite):
     def update(self):
         self.get_keys()                                                         # Testing
 
-        self.image = pygame.transform.rotate(self.game.boid_img, self.angle)
-
+        self.angle = self.vel.angle_to(self.up_vector)   # Find the angle to draw the boid
         self.pos += self.vel * self.game.dt              # Caluculate new position
         self.rect = self.image.get_rect(center=self.pos) # Get a new rect and set its center to pos
+        self.image = pygame.transform.rotate(self.game.boid_img, self.angle)
 
-        self.angle = self.vel.angle_to(self.up_vector)   # Find the angle to draw the boid
+
 
         self.separation()
         self.alignment()
