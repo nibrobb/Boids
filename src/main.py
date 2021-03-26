@@ -51,10 +51,13 @@ class Game:
     def events(self):
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
+                    self.quit()
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
                     self.spawn_boid_on_click(pos)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        self.quit()
                 
     def update(self):
         self.all_sprites.update()
@@ -81,6 +84,9 @@ class Game:
                         (boid.pos.x, boid.pos.y),
                         (boid.pos.x + vec.x,
                         boid.pos.y + vec.y), 3)
+
+    def quit(self):
+        pygame.quit()
 
 def RNG_not_zero(a, b):
     rng = rand.randint(a, b)

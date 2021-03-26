@@ -1,5 +1,4 @@
-import math
-from random import randint, choice
+from random import randint
 import pygame
 from config import *
 
@@ -18,52 +17,27 @@ class Boid(pygame.sprite.Sprite):
 
         self.pos = pygame.Vector2(startpos)
         self.vel = pygame.Vector2(0, 0)
-        self.looking = pygame.Vector2(0, -1)
-        self.rot = 90                        # rot=0 means pointing at +x
-        self.rot_speed = 0
-
+        self.angle = 0                            # Initial rotation of 0 degrees
+        self.up_vector = pygame.Vector2(0, -1)    # Vector for the direction of the original image
 
 
     def update(self):
         self.get_keys()                                                         # Testing
 
-        # Find angle from where we are now, to were we are going
-        # Use that angle to rotate the sprite
-        
-        # self.rot = (self.rot - 90 + self.rot_speed * self.game.dt) % 360
-        self.rot %= 360
-        self.image = pygame.transform.rotate(self.game.boid_img, self.rot)
+        self.image = pygame.transform.rotate(self.game.boid_img, self.angle)
 
-        self.pos += self.vel * self.game.dt     # Caluculate new position
-        self.rect = self.image.get_rect(center=self.pos)
+        self.pos += self.vel * self.game.dt              # Caluculate new position
+        self.rect = self.image.get_rect(center=self.pos) # Get a new rect and set its center to pos
 
-        # angle = self.get_angle((self.looking.x, self.looking.y), (self.pos.x, self.pos.y))
-        # angle = angle * 180 / math.pi
-        # self.rot += angle
-
-        self.rot = self.vel.angle_to(pygame.Vector2(0, -1))
-        
-        # print(f"Angle = {angle}")
-
-        self.looking = self.pos                  # Set looking to the same as new position
+        self.angle = self.vel.angle_to(self.up_vector)   # Find the angle to draw the boid
 
         self.separation()
         self.alignment()
         self.cohesion()
 
-    def get_angle(self, origin, destination):
-        """Returns angle in radians from origin to destination.
-        This is the angle that you would get if the points were
-        on a cartesian grid. Arguments of (0,0), (1, -1)
-        return .25pi(45 deg) rather than 1.75pi(315 deg).
-        """
-        x_dist = destination[0] - origin[0]
-        y_dist = destination[1] - origin[1]
-        return math.atan2(-y_dist, x_dist)
-
+    
     def get_keys(self):
         """ testing """
-        self.rot_speed = 0
         keys = pygame.key.get_pressed()
         
 
@@ -76,8 +50,7 @@ class Boid(pygame.sprite.Sprite):
 
         # Little snippet to set a random velocity
         if self.vel.x == 0 and self.vel.y == 0:
-            self.vel += pygame.Vector2(randint(-100, 100), randint(-100, 100))
-        # self.vel = pygame.Vector2(BOID_SPEED, 0).rotate(-self.rot)
+            self.vel += pygame.Vector2(randint(-BOID_SPEED, BOID_SPEED), randint(-BOID_SPEED, BOID_SPEED))
 
     def cohesion(self):
         """ Steer towards the center of mass of nearby boids """
