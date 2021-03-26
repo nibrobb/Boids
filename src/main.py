@@ -50,14 +50,14 @@ class Game:
     
     def events(self):
         for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT:
+                self.quit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                self.spawn_boid_on_click(pos)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
                     self.quit()
-                if event.type == pygame.MOUSEBUTTONUP:
-                    pos = pygame.mouse.get_pos()
-                    self.spawn_boid_on_click(pos)
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_q:
-                        self.quit()
                 
     def update(self):
         self.all_sprites.update()
