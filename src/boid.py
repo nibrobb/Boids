@@ -31,6 +31,7 @@ class Boid(pygame.sprite.Sprite):
 
 
 
+        # TODO: Implement these rules
         self.separation()
         self.alignment()
         self.cohesion()
