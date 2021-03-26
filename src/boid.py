@@ -19,8 +19,9 @@ class Boid(pygame.sprite.Sprite):
         self.pos = pygame.Vector2(startpos)
         self.vel = pygame.Vector2(0, 0)
         self.looking = pygame.Vector2(0, -1)
-        self.rot = 0                        # rot=0 means pointing at +x
+        self.rot = 90                        # rot=0 means pointing at +x
         self.rot_speed = 0
+
 
 
     def update(self):
@@ -28,22 +29,23 @@ class Boid(pygame.sprite.Sprite):
 
         # Find angle from where we are now, to were we are going
         # Use that angle to rotate the sprite
-
-        
         
         # self.rot = (self.rot - 90 + self.rot_speed * self.game.dt) % 360
         self.rot %= 360
         self.image = pygame.transform.rotate(self.game.boid_img, self.rot)
 
-        self.pos += self.vel * self.game.dt
+        self.pos += self.vel * self.game.dt     # Caluculate new position
         self.rect = self.image.get_rect(center=self.pos)
 
-        angle = self.get_angle((self.looking.x, self.looking.y), (self.pos.x, self.pos.y))
-        angle = angle * 180 / math.pi
-        self.rot += angle
-        print(f"Angle = {angle}")
+        # angle = self.get_angle((self.looking.x, self.looking.y), (self.pos.x, self.pos.y))
+        # angle = angle * 180 / math.pi
+        # self.rot += angle
 
-        self.looking = self.pos     # set looking to the new position
+        self.rot = self.vel.angle_to(pygame.Vector2(0, -1))
+        
+        # print(f"Angle = {angle}")
+
+        self.looking = self.pos                  # Set looking to the same as new position
 
         self.separation()
         self.alignment()
@@ -57,7 +59,7 @@ class Boid(pygame.sprite.Sprite):
         """
         x_dist = destination[0] - origin[0]
         y_dist = destination[1] - origin[1]
-        return math.atan2(-y_dist, x_dist) % (2 * math.pi)
+        return math.atan2(-y_dist, x_dist)
 
     def get_keys(self):
         """ testing """
