@@ -14,6 +14,7 @@ class Game:
         self.screen = pygame.display.set_mode(SCREEN_RES)
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
+        self.dt = 0
 
     def initialize(self):
         """ Denne metoden setter opp alt som trengs for å kjøre simulasjonen """
@@ -32,10 +33,17 @@ class Game:
     def run(self):
         """ Kjøres ved start, holdes kjørende til brukeren avslutter """
         self.running = True
-        self.spawn_boids(100)
-
+        self.spawn_boids(10)
+        _boid = Boid(self, (SCREEN_X/2, SCREEN_Y/2), (255, 0, 0))
+        self.all_sprites.add(_boid)
+        ticker = 0
         while self.running:
-
+            ticker += self.dt
+            if ticker > 1000:
+                print(f"Pos:\t{_boid.pos}")
+                print(f"Vel:\t{_boid.vel}")
+                print(f"Angle:\t{_boid.angle}")
+                ticker %= 1000
             # Game logic goes here
 
 
