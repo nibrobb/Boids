@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import random as rand
-from typing import Tuple
 import pygame
 from config import *
 from boid import Boid
 
 
 class Game:
+    """ A simple flocking simulator """
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode(SCREEN_RES)
@@ -44,49 +44,62 @@ class Game:
             self.draw()
             ticker += self.dt*1000
             if ticker >= 1000:             # [Debug] Prints position, velocity and angle per second
-                print(f"Pos:\t{_boid.pos}")
+                print(f"\nPos:\t{_boid.pos}")
                 print(f"Vel:\t{_boid.vel}")
-                print(f"Angle:\t{_boid.angle}\n")
+                print(f"Angle:\t{_boid.angle}")
                 ticker = 0
 
     def events(self):
+        """ Event handler """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.quit()
             if event.type == pygame.MOUSEBUTTONUP:
-                pos = pygame.mouse.get_pos()
-                self.spawn_boid_on_click(pos)
+                self.spawn_boid_on_click()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     self.quit()
+                elif event.key == pygame.K_r:
+                    self.reset()
                 
     def update(self):
+        """ Updates sprites """
         self.all_sprites.update()
 
     def draw(self):
+        """ Draws all boids on the screen """
         self.screen.fill(BG_COLOR)
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, (sprite.rect.x, sprite.rect.y))
         pygame.display.flip()
 
 
-    def spawn_boid_on_click(self, pos):
+    def spawn_boid_on_click(self):
+        """ Spawn a single boid at mouse position """
+        pos = pygame.mouse.get_pos()
         boid = Boid(self, pos)
         self.all_sprites.add(boid)
 
     def spawn_boids(self, n_boids : int):
+        """ Spawn `n' amount of boids at random positions """
         for i in range(n_boids):
             boid = Boid(self, (rand.randint(0, SCREEN_X),
                                rand.randint(0, SCREEN_Y)))
             self.all_sprites.add(boid)
 
     def draw_heading_vector(self, boid : Boid, vec):
+        """ Supposed to draw a heading-vector in front of the boid """
         pygame.draw.line(self.screen, (255,0,0),
                         (boid.pos.x, boid.pos.y),
                         (boid.pos.x + vec.x,
                         boid.pos.y + vec.y), 3)
 
+    def reset(self):
+        """ Reset the game state """
+        pass
+
     def quit(self):
+        """ Quit """
         pygame.quit()
 
 def RNG_not_zero(a, b):
