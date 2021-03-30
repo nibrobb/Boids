@@ -25,6 +25,7 @@ class Boid(pygame.sprite.Sprite):
 
 
     def update(self):
+        """ Update """
         # TODO: Implement these rules
         self.separation()
         self.alignment()
@@ -33,12 +34,12 @@ class Boid(pygame.sprite.Sprite):
         self.move()
 
     def move(self):
+        """ Calculate the next position and rotate image """
         self.angle = self.vel.angle_to(self.up_vector) % 360   # Find the angle to draw the boid
         self.pos += self.vel * self.game.dt                    # Caluculate new position
         self.rect = self.image.get_rect(center=self.pos)       # Get a new rect and set its center to pos
         self.image = pygame.transform.rotate(self.game.boid_img, self.angle)
-    
-        
+
 
     # Rule that applies to all rules of boids:
     #   * A boid can only "see" some amount of its neighbors. It has a radius
@@ -79,11 +80,9 @@ class Boid(pygame.sprite.Sprite):
         """ Steer towards the average direction of nearby boids """
         # Makes boids steer to the average heading of neighbors
         # Little snippet to set a random velocity
-        
+
 
     def cohesion(self):
         """ Steer towards the center of mass of nearby boids """
         # Makes all boids in a radius stay in the same general direction.
         # A boid should navigate towards the center of all other neighbors
-
-        pass
