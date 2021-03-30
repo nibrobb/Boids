@@ -25,8 +25,6 @@ class Boid(pygame.sprite.Sprite):
 
 
     def update(self):
-        self.get_keys()                                                         # Testing
-
         # TODO: Implement these rules
         self.separation()
         self.alignment()
@@ -40,9 +38,6 @@ class Boid(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)       # Get a new rect and set its center to pos
         self.image = pygame.transform.rotate(self.game.boid_img, self.angle)
     
-    def get_keys(self):
-        """ testing """
-        keys = pygame.key.get_pressed()
         
 
     # Rule that applies to all rules of boids:
