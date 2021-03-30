@@ -35,9 +35,9 @@ class Boid(pygame.sprite.Sprite):
         self.move()
 
     def move(self):
-        self.angle = self.vel.angle_to(self.up_vector)   # Find the angle to draw the boid
-        self.pos += self.vel * self.game.dt              # Caluculate new position
-        self.rect = self.image.get_rect(center=self.pos) # Get a new rect and set its center to pos
+        self.angle = self.vel.angle_to(self.up_vector) % 360   # Find the angle to draw the boid
+        self.pos += self.vel * self.game.dt                    # Caluculate new position
+        self.rect = self.image.get_rect(center=self.pos)       # Get a new rect and set its center to pos
         self.image = pygame.transform.rotate(self.game.boid_img, self.angle)
     
     def get_keys(self):
@@ -52,28 +52,28 @@ class Boid(pygame.sprite.Sprite):
         """ Steer to avoid crowding """
         # Find distance to neighbors, if the distance to a neighbor is too close
         #   steer so that you get a larger distance
-        _turn = 250
-        _sign = 1
+        _turn = 200
+        _sign = 1       # Sign before turn-amount, + clockwise, - anti-clockwise
         if self.pos.x < self.rect.width:
-            if self.angle < 90:
+            if self.angle <= 90:
                 _sign = 1
             else:
                 _sign = -1
             self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
         elif self.pos.x > SCREEN_X - (self.rect.width):
-            if self.angle < 270:
-                _sign = 1
-            else:
+            if self.angle >= 270:
                 _sign = -1
+            else:
+                _sign = 1
             self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
         elif self.pos.y < self.rect.height:
-            if self.angle > 270:
-                _sign = 1
-            else:
+            if self.angle <= 180:
                 _sign = -1
+            else:
+                _sign = 1
             self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
         elif self.pos.y > SCREEN_Y - (self.rect.height):
-            if self.angle < 270:
+            if self.angle <= 180:
                 _sign = 1
             else:
                 _sign = -1

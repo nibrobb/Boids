@@ -38,24 +38,17 @@ class Game:
         self.all_sprites.add(_boid)
         ticker = 0
         while self.running:
-            ticker += self.dt
-            if ticker > 1000:
-                print(f"Pos:\t{_boid.pos}")
-                print(f"Vel:\t{_boid.vel}")
-                print(f"Angle:\t{_boid.angle}")
-                ticker %= 1000
-            # Game logic goes here
-
-
-            # Three rules of boids: Separation, Alignment, Cohesion
-                # 1) separation: steer to avoid crowding local flockmates
-                # 2) alignment: steer towards the average heading of local flockmates
-                # 3) cohesion: steer to move towards the average position (center of mass) of local flockmates
             self.dt = self.clock.tick(FPS) / 1000.0
             self.events()
             self.update()
             self.draw()
-    
+            ticker += self.dt*1000
+            if ticker >= 1000:             # [Debug] Prints position, velocity and angle per second
+                print(f"Pos:\t{_boid.pos}")
+                print(f"Vel:\t{_boid.vel}")
+                print(f"Angle:\t{_boid.angle}\n")
+                ticker = 0
+
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
