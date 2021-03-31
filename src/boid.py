@@ -28,11 +28,14 @@ class Boid(pygame.sprite.Sprite):
     def update(self):
         """ Update """
         # TODO: Implement these rules
+        neighbors = self.get_neighbors()
+
         self.separation()
         self.alignment()
-        self.cohesion(self.game.master_coh_weight)
+        self.cohesion(neighbors, self.game.master_coh_weight)
 
         self.move()
+
 
     def move(self):
         """ Calculate the next position and rotate image """
@@ -44,53 +47,76 @@ class Boid(pygame.sprite.Sprite):
         self.pos += self.vel * self.game.delta_time                    # Caluculate new position
         self.rect = self.image.get_rect(center=self.pos)       # Get a new rect and set its center to pos
         self.image = pygame.transform.rotate(self.game.boid_img, self.angle)
+        ### Some piece of code to not have the boid fly off into the void (i.e. off screen) ###
+        # self.avoid_wall()    # This is added to prevent boids from escaping the "play area"
+        self.wrap()            # Make the boid appear on the other side of the window if it crosses the edge
 
 
     # Rule that applies to all rules of boids:
     #   * A boid can only "see" some amount of its neighbors. It has a radius
     #       boids in that radius are neighbors, and those outside are not.
-    def separation(self):
+    def separation(self, neighbors : pygame.sprite.Group, weight : int = 1) -> pygame.Vector2:
         """ Steer to avoid crowding """
         # Find distance to neighbors, if the distance to a neighbor is too close
         #   steer so that you get a larger distance
 
-        ### Some piece of code to not have the boids fly off into the void (i.e. off screen) ###
-        # self.avoid_wall()       # This is added to prevent boids from escaping the "play area"
-        self.wrap()               # Make the boid appear on the other side of the window if it crosses the edge
 
 
-    def alignment(self):
+
+
+    def alignment(self, neighbors : pygame.sprite.Group, weight : int = 1) -> pygame.Vector2:
         """ Steer towards the average direction of nearby boids """
         # Makes boids steer to the average heading of neighbors
-        # Little snippet to set a random velocity
+        # Skal innrømme at æ henta mye inspirasjon fra Board To Bits Games
+        #       Kilde: https://youtu.be/7LDFLMRGyqs
+
+        # If no neighbors, maintain our current heading
+        if len(neighbors) == 0:
+            return self.vel
+
+        alignment_move = pygame.Vector2()
+        for neighbor in neighbors:
+            alignment_move += neighbor.vel
+        alignment_move /= len(neighbors)
+
+        return alignment_move
 
 
-    def cohesion(self, weight = 1):
+
+
+    def cohesion(self, neighbors : pygame.sprite.Group, weight : int = 1) -> pygame.Vector2:
         """ Steer towards the center of mass of nearby boids """
         # Makes all boids in a radius stay in the same general direction.
         # A boid should navigate towards the center of all other neighbors
-
-        ### Code for finding neighbors ###
-        _neighbors = pygame.sprite.Group()
-        for boid in self.game.all_sprites:
-            _dist = self.pos.distance_to(boid.pos)
-            # Add a boid to the neighbors group if they are within "line of sight"
-            if self.pos != boid.pos and _dist < VIEW_DISTANCE:
-                _neighbors.add(boid)
         
         # Find average position of neighboring boids
-        if len(_neighbors) != 0:
-            average_boid_pos = pygame.Vector2()
-            for neighbor in _neighbors:
-                average_boid_pos += neighbor.pos
-            average_boid_pos /= len(_neighbors)
+        if len(neighbors) != 0:
+            cohesion_move = pygame.Vector2()
+            for neighbor in neighbors:
+                cohesion_move += neighbor.pos
+            cohesion_move /= len(neighbors)
 
-            average_boid_pos -= self.pos # Prøve nokka nytt
+            cohesion_move -= self.pos # Prøve nokka nytt
+            return cohesion_move
+            # Funka ikkje som før, men d kanskje bedre for slutten(?)
+            # ok ok ok, se her, alle funksjonan returnere en ny vektor
+            # så det e ikkje sånn at hvert funksjon gjør nokka med vel
 
-            self.vel += weight * average_boid_pos * self.game.delta_time
+            # self.vel += weight * average_boid_pos * self.game.delta_time
             # self.vel = weight * average_boid_pos * self.game.delta_time
             # self.vel = self.vel.rotate(self.vel.angle_to(average_boid_pos) * weight * self.game.delta_time)
-            
+
+
+    def get_neighbors(self) -> pygame.sprite.Group:
+        """ Code for finding neighbors """
+        neighbors = pygame.sprite.Group()
+        for boid in self.game.all_sprites:
+            dist = self.pos.distance_to(boid.pos)
+            # Add a boid to the neighbors group if they are within "line of sight"
+            if self.pos != boid.pos and dist < VIEW_DISTANCE:
+                neighbors.add(boid)
+        return neighbors
+
 
     def avoid_wall(self):
         """ Make boids avoid walls """
@@ -121,6 +147,7 @@ class Boid(pygame.sprite.Sprite):
             else:
                 _sign = -1
             self.vel = self.vel.rotate(_sign * _turn * self.game.delta_time)
+
 
     def wrap(self):
         """ Cheap way of wrapping boids around to the other side of the window when they hit a wall """
