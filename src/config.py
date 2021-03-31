@@ -1,11 +1,11 @@
 # ----- Screen resolution ----- #
-SCREEN_RES = (1280, 720)
+SCREEN_RES = (1920, 1080)
 SCREEN_X = SCREEN_RES[0]
 SCREEN_Y = SCREEN_RES[1]
 
 TITLE = "boids by Robin"
 
-FPS = 60
+FPS = 144
 
 
 # ----------- Colors --------- #

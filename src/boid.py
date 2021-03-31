@@ -1,6 +1,6 @@
 from random import randint
 import pygame
-from pygame.constants import AUDIODEVICEREMOVED
+from pygame import math
 from config import *
 
 
@@ -23,7 +23,6 @@ class Boid(pygame.sprite.Sprite):
 
         # Initial random speed and direction (might delete leater)
         self.vel = pygame.Vector2(randint(-BOID_SPEED, BOID_SPEED), randint(-BOID_SPEED, BOID_SPEED))
-
 
     def update(self):
         """ Update """
@@ -50,7 +49,8 @@ class Boid(pygame.sprite.Sprite):
         # Find distance to neighbors, if the distance to a neighbor is too close
         #   steer so that you get a larger distance
 
-        self.avoid_wall()       # This is added to prevent boids from escaping the "play area"
+        # self.avoid_wall()       # This is added to prevent boids from escaping the "play area"
+        self.wrap()               # Make the boid appear on the other side of the window if it crosses the edge
 
 
     def alignment(self):
@@ -59,23 +59,44 @@ class Boid(pygame.sprite.Sprite):
         # Little snippet to set a random velocity
 
 
-    def cohesion(self):
+    def cohesion(self, weight = 1):
         """ Steer towards the center of mass of nearby boids """
         # Makes all boids in a radius stay in the same general direction.
         # A boid should navigate towards the center of all other neighbors
+        radius = 500
+        _neighbors = pygame.sprite.Group()
+        for boid in self.game.all_sprites:
+            _dist = self.pos.distance_to(boid.pos)
+            # print(f"Distance to boid: {_dist}")
+            # Add a boid to the neighbors group if they are within "line of sight"
+            if self.pos != boid.pos and _dist < radius:
+                # print("In reach")
+                _neighbors.add(boid)
+        # Find average position of neighboring boids
+        if len(_neighbors) != 0:
+            sum_boid_pos = pygame.Vector2()
+            for neighbor in _neighbors:
+                sum_boid_pos += neighbor.pos
+            average_boid_pos = sum_boid_pos / len(_neighbors)
+            self.vel += weight * average_boid_pos * self.game.dt
+            if self.vel.magnitude() > 1000:
+                self.vel *= 0.95
+            # self.vel = weight * average_boid_pos * self.game.dt
+            # self.vel = self.vel.rotate(self.vel.angle_to(average_boid_pos) * weight * self.game.dt)
+            
 
     def avoid_wall(self):
-        _turn = 200     # Rate of rotation, how fast the boid turns around
+        _turn = 500     # Rate of rotation, how fast the boid turns around
         _sign = 1       # Sign before turn-amount, + clockwise, - anti-clockwise
         _margin = 100   # How close a boid can get to a wall before it turns
         if self.pos.x < _margin:
-            if self.angle <= 90:
+            if self.angle <= 90 or self.angle >= 270:
                 _sign = 1
             else:
                 _sign = -1
             self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
         elif self.pos.x > SCREEN_X - (_margin):
-            if self.angle >= 270:
+            if self.angle >= 270 or self.angle <= 90:
                 _sign = -1
             else:
                 _sign = 1
@@ -92,3 +113,7 @@ class Boid(pygame.sprite.Sprite):
             else:
                 _sign = -1
             self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
+
+    def wrap(self):
+        self.pos.x %= SCREEN_X
+        self.pos.y %= SCREEN_Y

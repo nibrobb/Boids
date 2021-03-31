@@ -33,21 +33,15 @@ class Game:
     def run(self):
         """ Kjøres ved start, holdes kjørende til brukeren avslutter """
         self.running = True
-        self.spawn_boids(10)
+        self.spawn_boids(50)
         _boid = Boid(self, (SCREEN_X/2, SCREEN_Y/2), (255, 0, 0))
         self.all_sprites.add(_boid)
-        ticker = 0
         while self.running:
             self.dt = self.clock.tick(FPS) / 1000.0
             self.events()
             self.update()
             self.draw()
-            ticker += self.dt*1000
-            if ticker >= 1000:             # [Debug] Prints position, velocity and angle per second
-                print(f"\nPos:\t{_boid.pos}")
-                print(f"Vel:\t{_boid.vel}")
-                print(f"Angle:\t{_boid.angle}")
-                ticker = 0
+
 
     def events(self):
         """ Event handler """
