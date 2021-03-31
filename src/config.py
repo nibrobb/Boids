@@ -20,6 +20,7 @@ BOID_HEIGHT = 50
 
 SPEED_LIMIT = 300           # Maximum speed
 VIEW_DISTANCE = 100         # How far out a boid can "see" another boid
+AVOIDANCE_RADIUS = 30       # How close a boid will get to another boid
 
 
 BOID_SPEED = 250

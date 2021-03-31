@@ -30,8 +30,8 @@ class Boid(pygame.sprite.Sprite):
         # TODO: Implement these rules
         neighbors = self.get_neighbors()
 
-        self.separation()
-        self.alignment()
+        self.separation(neighbors)
+        self.alignment(neighbors)
         self.cohesion(neighbors, self.game.master_coh_weight)
 
         self.move()
@@ -59,9 +59,24 @@ class Boid(pygame.sprite.Sprite):
         """ Steer to avoid crowding """
         # Find distance to neighbors, if the distance to a neighbor is too close
         #   steer so that you get a larger distance
+        if len(neighbors) == 0:
+            return pygame.Vector2()
 
+        # En kan tenke seg at vi har flere radiier, en for naboer, og en for "plagsomme naboer"
+        # Dette er metoden som håndterer den sistnevnte
+        # Vi tenker oss en radius inni nabo-radiusen som hvis det forekommer noen boids i skal vi
+        # prøve å få større avstand til
+        separation_move = pygame.Vector2()
+        n_avoid = 0
 
-
+        for neighbor in neighbors:
+            if (pygame.Vector2(neighbor.pos - self.pos) < AVOIDANCE_RADIUS):
+                n_avoid += 1
+                separation_move += (self.pos - neighbor.pos)
+        
+        if n_avoid > 0:
+            separation_move /= n_avoid
+        return separation_move
 
 
     def alignment(self, neighbors : pygame.sprite.Group, weight : int = 1) -> pygame.Vector2:
