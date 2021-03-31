@@ -48,7 +48,7 @@ class Boid(pygame.sprite.Sprite):
         """ Steer to avoid crowding """
         # Find distance to neighbors, if the distance to a neighbor is too close
         #   steer so that you get a larger distance
-        _turn = 200
+        _turn = 200     # Rate of rotation, how fast the boid turns around
         _sign = 1       # Sign before turn-amount, + clockwise, - anti-clockwise
         if self.pos.x < self.rect.width:
             if self.angle <= 90:
