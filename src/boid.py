@@ -1,5 +1,6 @@
 from random import randint
 import pygame
+from pygame.constants import AUDIODEVICEREMOVED
 from config import *
 
 
@@ -48,27 +49,32 @@ class Boid(pygame.sprite.Sprite):
         """ Steer to avoid crowding """
         # Find distance to neighbors, if the distance to a neighbor is too close
         #   steer so that you get a larger distance
+        
+        self.avoid_wall()       # This is added to prevent boids from escaping the "play area"
+
+    def avoid_wall(self):
         _turn = 200     # Rate of rotation, how fast the boid turns around
         _sign = 1       # Sign before turn-amount, + clockwise, - anti-clockwise
-        if self.pos.x < self.rect.width:
+        _margin = 100   # How close a boid can get to a wall before it turns
+        if self.pos.x < _margin:
             if self.angle <= 90:
                 _sign = 1
             else:
                 _sign = -1
             self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
-        elif self.pos.x > SCREEN_X - (self.rect.width):
+        elif self.pos.x > SCREEN_X - (_margin):
             if self.angle >= 270:
                 _sign = -1
             else:
                 _sign = 1
             self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
-        elif self.pos.y < self.rect.height:
+        elif self.pos.y < _margin:
             if self.angle <= 180:
                 _sign = -1
             else:
                 _sign = 1
             self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
-        elif self.pos.y > SCREEN_Y - (self.rect.height):
+        elif self.pos.y > SCREEN_Y - (_margin):
             if self.angle <= 180:
                 _sign = 1
             else:
