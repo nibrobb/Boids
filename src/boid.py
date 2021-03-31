@@ -49,8 +49,20 @@ class Boid(pygame.sprite.Sprite):
         """ Steer to avoid crowding """
         # Find distance to neighbors, if the distance to a neighbor is too close
         #   steer so that you get a larger distance
-        
+
         self.avoid_wall()       # This is added to prevent boids from escaping the "play area"
+
+
+    def alignment(self):
+        """ Steer towards the average direction of nearby boids """
+        # Makes boids steer to the average heading of neighbors
+        # Little snippet to set a random velocity
+
+
+    def cohesion(self):
+        """ Steer towards the center of mass of nearby boids """
+        # Makes all boids in a radius stay in the same general direction.
+        # A boid should navigate towards the center of all other neighbors
 
     def avoid_wall(self):
         _turn = 200     # Rate of rotation, how fast the boid turns around
@@ -80,15 +92,3 @@ class Boid(pygame.sprite.Sprite):
             else:
                 _sign = -1
             self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
-
-
-    def alignment(self):
-        """ Steer towards the average direction of nearby boids """
-        # Makes boids steer to the average heading of neighbors
-        # Little snippet to set a random velocity
-
-
-    def cohesion(self):
-        """ Steer towards the center of mass of nearby boids """
-        # Makes all boids in a radius stay in the same general direction.
-        # A boid should navigate towards the center of all other neighbors
