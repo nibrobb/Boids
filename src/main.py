@@ -15,6 +15,7 @@ class Game:
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
         self.delta_time = 0
+        self.master_coh_weight = 1
 
     def initialize(self):
         """ Denne metoden setter opp alt som trengs for å kjøre simulasjonen """
@@ -38,7 +39,7 @@ class Game:
     def run(self):
         """ Kjøres ved start, holdes kjørende til brukeren avslutter """
         self.running = True
-        self.spawn_boids(50)
+        self.spawn_boids(100)
         _boid = Boid(self, (SCREEN_X/2, SCREEN_Y/2), (255, 0, 0))
         self.all_sprites.add(_boid)
         while self.running:
@@ -60,6 +61,11 @@ class Game:
                     self.quit()
                 elif event.key == pygame.K_r:
                     self.reset()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_KP_PLUS]:
+            self.master_coh_weight += 0.01
+        elif keys[pygame.K_KP_MINUS]:
+            self.master_coh_weight -= 0.01
                 
     def update(self):
         """ Updates sprites """
@@ -70,6 +76,20 @@ class Game:
         self.screen.fill(BG_COLOR)
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, (sprite.rect.x, sprite.rect.y))
+
+
+        # Print all the weights
+        text_size = 20
+        font_family = "Comic Sans MS"
+        coh_font = pygame.font.SysFont(font_family, text_size)
+        coh_surface = coh_font.render(f"Cohesion weight: {self.master_coh_weight}", True, WHITE)
+        sep_font = pygame.font.SysFont(font_family, text_size)
+        sep_surface = sep_font.render(f"Separation weight: {0}", True, WHITE)
+        align_font = pygame.font.SysFont(font_family, text_size)
+        align_surface = align_font.render(f"Alignment weight: {0}", True, WHITE)
+        self.screen.blit(coh_surface, (8, 8))
+        self.screen.blit(sep_surface, (8, 8 + coh_surface.get_height()))
+        self.screen.blit(align_surface, (8, 8 + coh_surface.get_height() + sep_surface.get_height()))
         pygame.display.flip()
 
 

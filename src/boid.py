@@ -24,12 +24,13 @@ class Boid(pygame.sprite.Sprite):
         # Initial random speed and direction (might delete leater)
         self.vel = pygame.Vector2(randint(-BOID_SPEED, BOID_SPEED), randint(-BOID_SPEED, BOID_SPEED))
 
+
     def update(self):
         """ Update """
         # TODO: Implement these rules
         self.separation()
         self.alignment()
-        self.cohesion()
+        self.cohesion(self.game.master_coh_weight)
 
         self.move()
 
@@ -63,14 +64,11 @@ class Boid(pygame.sprite.Sprite):
         """ Steer towards the center of mass of nearby boids """
         # Makes all boids in a radius stay in the same general direction.
         # A boid should navigate towards the center of all other neighbors
-        radius = 500
         _neighbors = pygame.sprite.Group()
         for boid in self.game.all_sprites:
             _dist = self.pos.distance_to(boid.pos)
-            # print(f"Distance to boid: {_dist}")
             # Add a boid to the neighbors group if they are within "line of sight"
-            if self.pos != boid.pos and _dist < radius:
-                # print("In reach")
+            if self.pos != boid.pos and _dist < VIEW_DISTANCE:
                 _neighbors.add(boid)
         # Find average position of neighboring boids
         if len(_neighbors) != 0:
@@ -81,13 +79,14 @@ class Boid(pygame.sprite.Sprite):
 
             self.vel += weight * average_boid_pos * self.game.delta_time
             # Reduce velocity by 5 % if they going to fast
-            if self.vel.magnitude() > 100:
+            if self.vel.magnitude() > SPEED_LIMIT:
                 self.vel *= 0.95
             # self.vel = weight * average_boid_pos * self.game.delta_time
             # self.vel = self.vel.rotate(self.vel.angle_to(average_boid_pos) * weight * self.game.delta_time)
             
 
     def avoid_wall(self):
+        """ Make boids avoid walls """
         _turn = 500     # Rate of rotation, how fast the boid turns around
         _sign = 1       # Sign before turn-amount, + clockwise, - anti-clockwise
         _margin = 100   # How close a boid can get to a wall before it turns
@@ -117,5 +116,6 @@ class Boid(pygame.sprite.Sprite):
             self.vel = self.vel.rotate(_sign * _turn * self.game.delta_time)
 
     def wrap(self):
+        """ Cheap way of wrapping boids around to the other side of the window when they hit a wall """
         self.pos.x %= SCREEN_X
         self.pos.y %= SCREEN_Y
