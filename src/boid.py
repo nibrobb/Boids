@@ -36,6 +36,10 @@ class Boid(pygame.sprite.Sprite):
 
     def move(self):
         """ Calculate the next position and rotate image """
+        # if self.vel.magnitude() > SPEED_LIMIT:
+        #         self.vel *= 0.95
+        if self.vel.magnitude() > SPEED_LIMIT:
+            self.vel = self.vel.normalize() * SPEED_LIMIT
         self.angle = self.vel.angle_to(self.up_vector) % 360   # Find the angle to draw the boid
         self.pos += self.vel * self.game.delta_time                    # Caluculate new position
         self.rect = self.image.get_rect(center=self.pos)       # Get a new rect and set its center to pos
@@ -50,6 +54,7 @@ class Boid(pygame.sprite.Sprite):
         # Find distance to neighbors, if the distance to a neighbor is too close
         #   steer so that you get a larger distance
 
+        ### Some piece of code to not have the boids fly off into the void (i.e. off screen) ###
         # self.avoid_wall()       # This is added to prevent boids from escaping the "play area"
         self.wrap()               # Make the boid appear on the other side of the window if it crosses the edge
 
@@ -64,23 +69,25 @@ class Boid(pygame.sprite.Sprite):
         """ Steer towards the center of mass of nearby boids """
         # Makes all boids in a radius stay in the same general direction.
         # A boid should navigate towards the center of all other neighbors
+
+        ### Code for finding neighbors ###
         _neighbors = pygame.sprite.Group()
         for boid in self.game.all_sprites:
             _dist = self.pos.distance_to(boid.pos)
             # Add a boid to the neighbors group if they are within "line of sight"
             if self.pos != boid.pos and _dist < VIEW_DISTANCE:
                 _neighbors.add(boid)
+        
         # Find average position of neighboring boids
         if len(_neighbors) != 0:
-            sum_boid_pos = pygame.Vector2()
+            average_boid_pos = pygame.Vector2()
             for neighbor in _neighbors:
-                sum_boid_pos += neighbor.pos
-            average_boid_pos = sum_boid_pos / len(_neighbors)
+                average_boid_pos += neighbor.pos
+            average_boid_pos /= len(_neighbors)
+
+            average_boid_pos -= self.pos # Prøve nokka nytt
 
             self.vel += weight * average_boid_pos * self.game.delta_time
-            # Reduce velocity by 5 % if they going to fast
-            if self.vel.magnitude() > SPEED_LIMIT:
-                self.vel *= 0.95
             # self.vel = weight * average_boid_pos * self.game.delta_time
             # self.vel = self.vel.rotate(self.vel.angle_to(average_boid_pos) * weight * self.game.delta_time)
             

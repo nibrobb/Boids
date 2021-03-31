@@ -19,7 +19,7 @@ BOID_WIDTH = 30
 BOID_HEIGHT = 50
 
 SPEED_LIMIT = 300           # Maximum speed
-VIEW_DISTANCE = 500         # How far out a boid can "see" another boid
+VIEW_DISTANCE = 100         # How far out a boid can "see" another boid
 
 
 BOID_SPEED = 250

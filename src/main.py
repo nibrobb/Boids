@@ -15,7 +15,7 @@ class Game:
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
         self.delta_time = 0
-        self.master_coh_weight = 1
+        self.master_coh_weight = 0.3
 
     def initialize(self):
         """ Denne metoden setter opp alt som trengs for å kjøre simulasjonen """
@@ -24,7 +24,6 @@ class Game:
 
     def load_boid(self):
         """ Laster inn en egendefinert boid polygon """
-
         # Lager en overflate for å tegne boiden på og setter bakgrunnsfargen gjennomsiktig.
         boid_original = pygame.Surface([BOID_WIDTH, BOID_HEIGHT], pygame.SRCALPHA)
         # Tegner en polygon fra punktene definert i config.py med heldekkende fyll
