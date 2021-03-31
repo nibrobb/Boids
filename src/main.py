@@ -25,10 +25,14 @@ class Game:
         """ Laster inn en egendefinert boid polygon """
 
         # Lager en overflate for å tegne boiden på og setter bakgrunnsfargen gjennomsiktig.
-        self.boid_img = pygame.Surface([BOID_WIDTH, BOID_HEIGHT], pygame.SRCALPHA)
-
+        temp = pygame.Surface([BOID_WIDTH, BOID_HEIGHT], pygame.SRCALPHA)
         # Tegner en polygon fra punktene definert i config.py med heldekkende fyll
-        pygame.draw.polygon(self.boid_img, WHITE, BOID_SHAPE, 0)
+        pygame.draw.polygon(temp, WHITE, BOID_SHAPE, 0)
+
+        # self.boid_img = pygame.transform.scale(self.boid_img, [int(0.9*BOID_WIDTH), int(0.9*BOID_HEIGHT)])
+        self.boid_img = pygame.transform.rotozoom(temp, 0, 0.9)
+
+
 
     def run(self):
         """ Kjøres ved start, holdes kjørende til brukeren avslutter """

@@ -78,8 +78,10 @@ class Boid(pygame.sprite.Sprite):
             for neighbor in _neighbors:
                 sum_boid_pos += neighbor.pos
             average_boid_pos = sum_boid_pos / len(_neighbors)
+
             self.vel += weight * average_boid_pos * self.game.dt
-            if self.vel.magnitude() > 1000:
+            # Reduce velocity by 5 % if they going to fast
+            if self.vel.magnitude() > 100:
                 self.vel *= 0.95
             # self.vel = weight * average_boid_pos * self.game.dt
             # self.vel = self.vel.rotate(self.vel.angle_to(average_boid_pos) * weight * self.game.dt)
