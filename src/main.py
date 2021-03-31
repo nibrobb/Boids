@@ -14,7 +14,7 @@ class Game:
         self.screen = pygame.display.set_mode(SCREEN_RES)
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
-        self.dt = 0
+        self.delta_time = 0
 
     def initialize(self):
         """ Denne metoden setter opp alt som trengs for å kjøre simulasjonen """
@@ -25,12 +25,13 @@ class Game:
         """ Laster inn en egendefinert boid polygon """
 
         # Lager en overflate for å tegne boiden på og setter bakgrunnsfargen gjennomsiktig.
-        temp = pygame.Surface([BOID_WIDTH, BOID_HEIGHT], pygame.SRCALPHA)
+        boid_original = pygame.Surface([BOID_WIDTH, BOID_HEIGHT], pygame.SRCALPHA)
         # Tegner en polygon fra punktene definert i config.py med heldekkende fyll
-        pygame.draw.polygon(temp, WHITE, BOID_SHAPE, 0)
+        pygame.draw.polygon(boid_original, WHITE, BOID_SHAPE, 0)
 
         # self.boid_img = pygame.transform.scale(self.boid_img, [int(0.9*BOID_WIDTH), int(0.9*BOID_HEIGHT)])
-        self.boid_img = pygame.transform.rotozoom(temp, 0, 0.9)
+        # Reduserer størrelsen på boidsa med 40% (dermed skala på 0.6).
+        self.boid_img = pygame.transform.rotozoom(boid_original, 0, 0.6)
 
 
 
@@ -41,7 +42,7 @@ class Game:
         _boid = Boid(self, (SCREEN_X/2, SCREEN_Y/2), (255, 0, 0))
         self.all_sprites.add(_boid)
         while self.running:
-            self.dt = self.clock.tick(FPS) / 1000.0
+            self.delta_time = self.clock.tick(FPS) / 1000.0
             self.events()
             self.update()
             self.draw()

@@ -36,7 +36,7 @@ class Boid(pygame.sprite.Sprite):
     def move(self):
         """ Calculate the next position and rotate image """
         self.angle = self.vel.angle_to(self.up_vector) % 360   # Find the angle to draw the boid
-        self.pos += self.vel * self.game.dt                    # Caluculate new position
+        self.pos += self.vel * self.game.delta_time                    # Caluculate new position
         self.rect = self.image.get_rect(center=self.pos)       # Get a new rect and set its center to pos
         self.image = pygame.transform.rotate(self.game.boid_img, self.angle)
 
@@ -79,12 +79,12 @@ class Boid(pygame.sprite.Sprite):
                 sum_boid_pos += neighbor.pos
             average_boid_pos = sum_boid_pos / len(_neighbors)
 
-            self.vel += weight * average_boid_pos * self.game.dt
+            self.vel += weight * average_boid_pos * self.game.delta_time
             # Reduce velocity by 5 % if they going to fast
             if self.vel.magnitude() > 100:
                 self.vel *= 0.95
-            # self.vel = weight * average_boid_pos * self.game.dt
-            # self.vel = self.vel.rotate(self.vel.angle_to(average_boid_pos) * weight * self.game.dt)
+            # self.vel = weight * average_boid_pos * self.game.delta_time
+            # self.vel = self.vel.rotate(self.vel.angle_to(average_boid_pos) * weight * self.game.delta_time)
             
 
     def avoid_wall(self):
@@ -96,25 +96,25 @@ class Boid(pygame.sprite.Sprite):
                 _sign = 1
             else:
                 _sign = -1
-            self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
+            self.vel = self.vel.rotate(_sign * _turn * self.game.delta_time)
         elif self.pos.x > SCREEN_X - (_margin):
             if self.angle >= 270 or self.angle <= 90:
                 _sign = -1
             else:
                 _sign = 1
-            self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
+            self.vel = self.vel.rotate(_sign * _turn * self.game.delta_time)
         elif self.pos.y < _margin:
             if self.angle <= 180:
                 _sign = -1
             else:
                 _sign = 1
-            self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
+            self.vel = self.vel.rotate(_sign * _turn * self.game.delta_time)
         elif self.pos.y > SCREEN_Y - (_margin):
             if self.angle <= 180:
                 _sign = 1
             else:
                 _sign = -1
-            self.vel = self.vel.rotate(_sign * _turn * self.game.dt)
+            self.vel = self.vel.rotate(_sign * _turn * self.game.delta_time)
 
     def wrap(self):
         self.pos.x %= SCREEN_X
