@@ -11,7 +11,7 @@ class Boid(pygame.sprite.Sprite):
 
         self.game = game
 
-        self.image = game.boid_img          # Copying the originale boid-image
+        self.image = game.boid_img          # Copying the original boid-image
         self.rect = self.image.get_rect()
 
         self.color = color
