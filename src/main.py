@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from abc import get_cache_token
 import random as rand
+from typing import Tuple, Optional
 import pygame
+from pygame.constants import K_BACKSLASH
 from config import *
 from boid import Boid
 
@@ -15,7 +18,7 @@ class Game:
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
         self.delta_time = 0
-        self.master_coh_weight = 0.3
+        self.weights = [1, 1, 1]
 
     def initialize(self):
         """ Denne metoden setter opp alt som trengs for å kjøre simulasjonen """
@@ -39,8 +42,7 @@ class Game:
         """ Kjøres ved start, holdes kjørende til brukeren avslutter """
         self.running = True
         self.spawn_boids(100)
-        _boid = Boid(self, (SCREEN_X/2, SCREEN_Y/2), (255, 0, 0))
-        self.all_sprites.add(_boid)
+
         while self.running:
             self.delta_time = self.clock.tick(FPS) / 1000.0
             self.events()
@@ -61,14 +63,16 @@ class Game:
                 elif event.key == pygame.K_r:
                     self.reset()
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_KP_PLUS]:
-            self.master_coh_weight += 0.01
-        elif keys[pygame.K_KP_MINUS]:
-            self.master_coh_weight -= 0.01
-                
+        # if keys[pygame.K_KP_PLUS]:
+            # self.master_coh_weight += 0.01
+        # elif keys[pygame.K_KP_MINUS]:
+            # self.master_coh_weight -= 0.01
+
+
     def update(self):
         """ Updates sprites """
         self.all_sprites.update()
+
 
     def draw(self):
         """ Draws all boids on the screen """
@@ -78,18 +82,39 @@ class Game:
 
 
         # Print all the weights
+        self.print_weights()
+        self.print_weights((600,600))
+        
+        
+        pygame.display.flip()
+
+    def print_weights(self, pos : Tuple[int, int] = (8, 8)):
+        """ Prints all three weights in the upper left hand corner """
         text_size = 20
         font_family = "Comic Sans MS"
-        coh_font = pygame.font.SysFont(font_family, text_size)
-        coh_surface = coh_font.render(f"Cohesion weight: {self.master_coh_weight}", True, WHITE)
-        sep_font = pygame.font.SysFont(font_family, text_size)
-        sep_surface = sep_font.render(f"Separation weight: {0}", True, WHITE)
+
         align_font = pygame.font.SysFont(font_family, text_size)
-        align_surface = align_font.render(f"Alignment weight: {0}", True, WHITE)
-        self.screen.blit(coh_surface, (8, 8))
-        self.screen.blit(sep_surface, (8, 8 + coh_surface.get_height()))
-        self.screen.blit(align_surface, (8, 8 + coh_surface.get_height() + sep_surface.get_height()))
-        pygame.display.flip()
+        align_surface = align_font.render(f"Alignment weight: {self.weights[0]}", True, WHITE)
+
+        coh_font = pygame.font.SysFont(font_family, text_size)
+        coh_surface = coh_font.render(f"Cohesion weight: {self.weights[1]}", True, WHITE)
+
+        sep_font = pygame.font.SysFont(font_family, text_size)
+        sep_surface = sep_font.render(f"Separation weight: {self.weights[2]}", True, WHITE)
+
+        background = pygame.Surface((max(align_surface.get_width(),
+                                        coh_surface.get_width(),
+                                        sep_surface.get_width()),
+                                        (align_surface.get_height() +
+                                        coh_surface.get_height() +
+                                        sep_surface.get_height())))
+        background.fill((0,0,0))
+
+        self.screen.blit(background, pos)
+
+        self.screen.blit(align_surface, (pos[0], pos[1]) )
+        self.screen.blit(coh_surface,   (pos[0], pos[1] + align_surface.get_height() ) )
+        self.screen.blit(sep_surface,   (pos[0], pos[1] + align_surface.get_height() + coh_surface.get_height() ) )
 
 
     def spawn_boid_on_click(self):
@@ -105,7 +130,7 @@ class Game:
                                rand.randint(0, SCREEN_Y)))
             self.all_sprites.add(boid)
 
-    def draw_heading_vector(self, boid : Boid, vec):
+    def draw_heading_vector(self, boid : Boid, vec : pygame.Vector2):
         """ Supposed to draw a heading-vector in front of the boid """
         pygame.draw.line(self.screen, (255,0,0),
                         (boid.pos.x, boid.pos.y),
@@ -120,7 +145,7 @@ class Game:
         """ Quit """
         pygame.quit()
 
-def RNG_not_zero(a, b):
+def RNG_not_zero(a : int, b : int):
     rng = rand.randint(a, b)
     if rng == 0:
         rng = 1
