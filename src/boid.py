@@ -1,6 +1,5 @@
 from random import randint
 import pygame
-from pygame import math
 from config import *
 
 
@@ -70,7 +69,7 @@ class Boid(pygame.sprite.Sprite):
         n_avoid = 0
 
         for neighbor in neighbors:
-            if (pygame.Vector2(neighbor.pos - self.pos) < AVOIDANCE_RADIUS):
+            if (neighbor.pos.distance_to(self.pos) < AVOIDANCE_RADIUS):
                 n_avoid += 1
                 separation_move += (self.pos - neighbor.pos)
         
