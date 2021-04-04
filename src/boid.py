@@ -40,8 +40,8 @@ class Boid(pygame.sprite.Sprite):
         """ Calculate the next position and rotate image """
         # if self.vel.magnitude() > SPEED_LIMIT:
         #         self.vel *= 0.95
-        if self.vel.magnitude() > SPEED_LIMIT:
-            self.vel = self.vel.normalize() * SPEED_LIMIT
+        if self.vel.magnitude() > MAX_SPEED:
+            self.vel = self.vel.normalize() * MAX_SPEED
         self.angle = self.vel.angle_to(self.up_vector) % 360   # Find the angle to draw the boid
         self.pos += self.vel * self.game.delta_time                    # Caluculate new position
         self.rect = self.image.get_rect(center=self.pos)       # Get a new rect and set its center to pos
@@ -54,6 +54,8 @@ class Boid(pygame.sprite.Sprite):
     # Rule that applies to all rules of boids:
     #   * A boid can only "see" some amount of its neighbors. It has a radius
     #       boids in that radius are neighbors, and those outside are not.
+    
+    # Rule no. 1
     def separation(self, neighbors : pygame.sprite.Group, weight : int = 1) -> pygame.Vector2:
         """ Steer to avoid crowding """
         # Find distance to neighbors, if the distance to a neighbor is too close
@@ -78,6 +80,7 @@ class Boid(pygame.sprite.Sprite):
         return separation_move
 
 
+    # Rule no. 2
     def alignment(self, neighbors : pygame.sprite.Group, weight : int = 1) -> pygame.Vector2:
         """ Steer towards the average direction of nearby boids """
         # Makes boids steer to the average heading of neighbors
@@ -97,7 +100,7 @@ class Boid(pygame.sprite.Sprite):
 
 
 
-
+    # Rule no. 3
     def cohesion(self, neighbors : pygame.sprite.Group, weight : int = 1) -> pygame.Vector2:
         """ Steer towards the center of mass of nearby boids """
         # Makes all boids in a radius stay in the same general direction.

@@ -18,7 +18,7 @@ BOID_SHAPE = [(15, 0), (0, 50), (15, 40), (30, 50), (15, 0)]
 BOID_WIDTH = 30
 BOID_HEIGHT = 50
 
-SPEED_LIMIT = 300           # Maximum speed
+MAX_SPEED = 300           # Maximum speed
 VIEW_DISTANCE = 100         # How far out a boid can "see" another boid
 AVOIDANCE_RADIUS = 30       # How close a boid will get to another boid
 
