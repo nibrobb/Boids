@@ -8,6 +8,10 @@ TITLE = "boids by Robin"
 
 FPS = 144
 
+# ----------- Weights --------- #
+ALIGNMENT = 1
+COHESION = 2
+SEPARATION = 4
 
 # ----------- Colors --------- #
 BG_COLOR = (0, 30, 0)

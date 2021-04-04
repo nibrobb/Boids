@@ -17,7 +17,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.delta_time = 0
         # weights index 0, 1 and 2 are respectivly alignment, cohesion and separation
-        self.weights = [1, 2, 4]
+        self.weights = [ALIGNMENT, COHESION, SEPARATION]
 
     def initialize(self):
         """ Denne metoden setter opp alt som trengs for å kjøre simulasjonen """
@@ -62,10 +62,18 @@ class Game:
                 elif event.key == pygame.K_r:
                     self.reset()
         keys = pygame.key.get_pressed()
-        # if keys[pygame.K_KP_PLUS]:
-            # self.master_coh_weight += 0.01
-        # elif keys[pygame.K_KP_MINUS]:
-            # self.master_coh_weight -= 0.01
+        if keys[pygame.K_1]:
+            self.weights[0] -= 0.01
+        if keys[pygame.K_2]:
+            self.weights[0] += 0.01
+        if keys[pygame.K_3]:
+            self.weights[1] -= 0.01
+        if keys[pygame.K_4]:
+            self.weights[1] += 0.01
+        if keys[pygame.K_5]:
+            self.weights[2] -= 0.01
+        if keys[pygame.K_6]:
+            self.weights[2] += 0.01
 
 
     def update(self):
@@ -94,13 +102,13 @@ class Game:
         fps_surface = fps_font.render(f"Frame rate: {self.clock.get_fps():.0f}", True,  WHITE)
 
         align_font = pygame.font.SysFont(font_family, text_size)
-        align_surface = align_font.render(f"Alignment weight: {self.weights[0]:.4f}", True, WHITE)
+        align_surface = align_font.render(f"Alignment weight: {self.weights[0]:.2f}", True, WHITE)
 
         coh_font = pygame.font.SysFont(font_family, text_size)
-        coh_surface = coh_font.render(f"Cohesion weight: {self.weights[1]:.4f}", True, WHITE)
+        coh_surface = coh_font.render(f"Cohesion weight: {self.weights[1]:.2f}", True, WHITE)
 
         sep_font = pygame.font.SysFont(font_family, text_size)
-        sep_surface = sep_font.render(f"Separation weight: {self.weights[2]:.4f}", True, WHITE)
+        sep_surface = sep_font.render(f"Separation weight: {self.weights[2]:.2f}", True, WHITE)
 
         background = pygame.Surface((max(fps_surface.get_width(),
                                         align_surface.get_width(),
@@ -142,7 +150,9 @@ class Game:
 
     def reset(self):
         """ Reset the game state """
-        pass
+        self.all_sprites.empty()
+        self.weights = [ALIGNMENT, COHESION, SEPARATION]
+        self.spawn_boids(100)
 
     def quit(self):
         """ Quit """
