@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from abc import get_cache_token
 import random as rand
-from typing import Tuple, Optional
+from typing import Tuple
 import pygame
-from pygame.constants import K_BACKSLASH
 from config import *
 from boid import Boid
 
@@ -18,7 +16,8 @@ class Game:
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
         self.delta_time = 0
-        self.weights = [1, 1, 1]
+        # weights index 0, 1 and 2 are respectivly alignment, cohesion and separation
+        self.weights = [1, 2, 4]
 
     def initialize(self):
         """ Denne metoden setter opp alt som trengs for å kjøre simulasjonen """
@@ -82,39 +81,43 @@ class Game:
 
 
         # Print all the weights
-        self.print_weights()
-        self.print_weights((600,600))
-        
+        self.print_info()
         
         pygame.display.flip()
 
-    def print_weights(self, pos : Tuple[int, int] = (8, 8)):
-        """ Prints all three weights in the upper left hand corner """
-        text_size = 20
+    def print_info(self, pos : Tuple[int, int] = (0, 0)):
+        """ Prints some info, including weights and fps  """
+        text_size = SCREEN_Y//54
         font_family = "Comic Sans MS"
 
+        fps_font = pygame.font.SysFont(font_family, text_size)
+        fps_surface = fps_font.render(f"Frame rate: {self.clock.get_fps():.0f}", True,  WHITE)
+
         align_font = pygame.font.SysFont(font_family, text_size)
-        align_surface = align_font.render(f"Alignment weight: {self.weights[0]}", True, WHITE)
+        align_surface = align_font.render(f"Alignment weight: {self.weights[0]:.4f}", True, WHITE)
 
         coh_font = pygame.font.SysFont(font_family, text_size)
-        coh_surface = coh_font.render(f"Cohesion weight: {self.weights[1]}", True, WHITE)
+        coh_surface = coh_font.render(f"Cohesion weight: {self.weights[1]:.4f}", True, WHITE)
 
         sep_font = pygame.font.SysFont(font_family, text_size)
-        sep_surface = sep_font.render(f"Separation weight: {self.weights[2]}", True, WHITE)
+        sep_surface = sep_font.render(f"Separation weight: {self.weights[2]:.4f}", True, WHITE)
 
-        background = pygame.Surface((max(align_surface.get_width(),
+        background = pygame.Surface((max(fps_surface.get_width(),
+                                        align_surface.get_width(),
                                         coh_surface.get_width(),
-                                        sep_surface.get_width()),
-                                        (align_surface.get_height() +
+                                        sep_surface.get_width() + 8),
+                                        (fps_surface.get_height() +
+                                        align_surface.get_height() +
                                         coh_surface.get_height() +
-                                        sep_surface.get_height())))
+                                        sep_surface.get_height() + 8)))
         background.fill((0,0,0))
 
         self.screen.blit(background, pos)
 
-        self.screen.blit(align_surface, (pos[0], pos[1]) )
-        self.screen.blit(coh_surface,   (pos[0], pos[1] + align_surface.get_height() ) )
-        self.screen.blit(sep_surface,   (pos[0], pos[1] + align_surface.get_height() + coh_surface.get_height() ) )
+        self.screen.blit(fps_surface,   (pos[0] + 4, pos[1]))
+        self.screen.blit(align_surface, (pos[0] +4, pos[1] + fps_surface.get_height() ) )
+        self.screen.blit(coh_surface,   (pos[0] +4, pos[1] + fps_surface.get_height() + align_surface.get_height() ) )
+        self.screen.blit(sep_surface,   (pos[0] +4, pos[1] + fps_surface.get_height() + align_surface.get_height() + coh_surface.get_height() ) )
 
 
     def spawn_boid_on_click(self):
