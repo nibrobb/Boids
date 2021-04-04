@@ -1,5 +1,5 @@
 # ----- Screen resolution ----- #
-SCREEN_RES = (1920, 1080)
+SCREEN_RES = [1920, 1080]
 SCREEN_X = SCREEN_RES[0]
 SCREEN_Y = SCREEN_RES[1]
 
