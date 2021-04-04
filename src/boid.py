@@ -27,17 +27,29 @@ class Boid(pygame.sprite.Sprite):
     def update(self):
         """ Update """
         # TODO: Implement these rules
+
+        move = self.calculate_move()
+        self.move(move)
+
+    def calculate_move(self):
+        """ Calculates the next movement based on the three rules of boids """
         neighbors = self.get_neighbors()
+        move = pygame.Vector2()
 
-        self.alignment(neighbors, self.game.weights[0])
-        self.cohesion(neighbors, self.game.weights[1])
-        self.separation(neighbors, self.game.weights[2])
+        rules = [self.alignment, self.cohesion, self.separation]
+        for i in range(len(rules)):
+            partial_move = rules[i](neighbors)
+            if (partial_move != pygame.Vector2(0,0)):
+                if partial_move.magnitude() > self.game.weights[i]:
+                    partial_move.normalize()
+                    partial_move *= self.game.weights[i]
+                move += partial_move
+        return move
 
-        self.move()
 
-
-    def move(self):
+    def move(self, move):
         """ Calculate the next position and rotate image """
+        self.vel += move
         if self.vel.magnitude() > MAX_SPEED:
             self.vel = self.vel.normalize() * MAX_SPEED
         self.angle = self.vel.angle_to(self.up_vector) % 360   # Find the angle to draw the boid
@@ -46,11 +58,10 @@ class Boid(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.game.boid_img, self.angle)
         
         ### Some piece of code to not have the boid fly off into the void (i.e. off screen) ###
-        # self.avoid_wall()    # This is added to prevent boids from escaping the "play area"
         self.wrap()            # Make the boid appear on the other side of the window if it crosses the edge
 
     # Rule no. 1
-    def alignment(self, neighbors : pygame.sprite.Group, weight : int = 1) -> pygame.Vector2:
+    def alignment(self, neighbors : pygame.sprite.Group) -> pygame.Vector2:
         """ Steer towards the average direction of nearby boids """
         # Makes boids steer to the average heading of neighbors
         # Skal innrømme at æ henta mye inspirasjon fra Board To Bits Games
@@ -68,9 +79,8 @@ class Boid(pygame.sprite.Sprite):
         return alignment_move
 
 
-
     # Rule no. 2
-    def cohesion(self, neighbors : pygame.sprite.Group, weight : int = 1) -> pygame.Vector2:
+    def cohesion(self, neighbors : pygame.sprite.Group) -> pygame.Vector2:
         """ Steer towards the center of mass of nearby boids """
         # Makes all boids in a radius stay in the same general direction.
         # A boid should navigate towards the center of all other neighbors
@@ -89,12 +99,9 @@ class Boid(pygame.sprite.Sprite):
         # ok ok ok, se her, alle funksjonan returnere en ny vektor
         # så det e ikkje sånn at hvert funksjon gjør nokka med vel
 
-        # self.vel += weight * average_boid_pos * self.game.delta_time
-        # self.vel = weight * average_boid_pos * self.game.delta_time
-        # self.vel = self.vel.rotate(self.vel.angle_to(average_boid_pos) * weight * self.game.delta_time)
     
     # Rule no. 3
-    def separation(self, neighbors : pygame.sprite.Group, weight : int = 1) -> pygame.Vector2:
+    def separation(self, neighbors : pygame.sprite.Group) -> pygame.Vector2:
         """ Steer to avoid crowding """
         # Find distance to neighbors, if the distance to a neighbor is too close
         #   steer so that you get a larger distance
@@ -129,37 +136,6 @@ class Boid(pygame.sprite.Sprite):
             if self.pos != boid.pos and dist < VIEW_DISTANCE:
                 neighbors.add(boid)
         return neighbors
-
-
-    def avoid_wall(self):
-        """ Make boids avoid walls """
-        _turn = 500     # Rate of rotation, how fast the boid turns around
-        _sign = 1       # Sign before turn-amount, + clockwise, - anti-clockwise
-        _margin = 100   # How close a boid can get to a wall before it turns
-        if self.pos.x < _margin:
-            if self.angle <= 90 or self.angle >= 270:
-                _sign = 1
-            else:
-                _sign = -1
-            self.vel = self.vel.rotate(_sign * _turn * self.game.delta_time)
-        elif self.pos.x > SCREEN_X - (_margin):
-            if self.angle >= 270 or self.angle <= 90:
-                _sign = -1
-            else:
-                _sign = 1
-            self.vel = self.vel.rotate(_sign * _turn * self.game.delta_time)
-        elif self.pos.y < _margin:
-            if self.angle <= 180:
-                _sign = -1
-            else:
-                _sign = 1
-            self.vel = self.vel.rotate(_sign * _turn * self.game.delta_time)
-        elif self.pos.y > SCREEN_Y - (_margin):
-            if self.angle <= 180:
-                _sign = 1
-            else:
-                _sign = -1
-            self.vel = self.vel.rotate(_sign * _turn * self.game.delta_time)
 
 
     def wrap(self):
