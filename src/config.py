@@ -1,14 +1,14 @@
 # ----- Screen resolution ----- #
-# SCREEN_RES = [1920, 1080]
 SCREEN_RES = [1280, 720]
 SCREEN_X = SCREEN_RES[0]
 SCREEN_Y = SCREEN_RES[1]
 
 TITLE = "boids by Robin"
 
+# ------ Frame rate cap ------ #
 FPS = 144
 
-# ----------- Weights --------- #
+# ------ Default weights ------ #
 ALIGNMENT = 1
 COHESION = 2
 SEPARATION = 4
@@ -27,6 +27,5 @@ MAX_SPEED = 300           # Maximum speed
 VIEW_DISTANCE = 50         # How far out a boid can "see" another boid
 AVOIDANCE_RADIUS = 30       # How close a boid will get to another boid
 
-
+# -------- Speed limit -------- #
 BOID_SPEED = 250
-BOID_ROT_SPEED = 250
