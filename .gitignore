@@ -1,6 +1,7 @@
 **.vscode/**
 **test.*
 
+# Dia temporary files
 **.**~
 
 # Byte-compiled / optimized / DLL files
