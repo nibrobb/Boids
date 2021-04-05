@@ -4,13 +4,13 @@ from config import *
 
 
 class Boid(pygame.sprite.Sprite):
-    """Boid class"""
+    """ Boid class """
     def __init__(self, game, startpos, color = WHITE):
         super().__init__()
 
         self.game = game
 
-        self.image = game.boid_img          # Copying the original boid-image
+        self.image = game.boid_img                # Copying the original boid-image
         self.rect = self.image.get_rect()
 
         self.color = color
@@ -31,7 +31,7 @@ class Boid(pygame.sprite.Sprite):
         move = self.calculate_move()
         self.move(move)
 
-    def calculate_move(self):
+    def calculate_move(self) -> pygame.Vector2:
         """ Calculates the next movement based on the three rules of boids """
         neighbors = self.get_neighbors()
         move = pygame.Vector2()

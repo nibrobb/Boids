@@ -141,12 +141,6 @@ class Game:
                                rand.randint(0, SCREEN_Y)))
             self.all_sprites.add(boid)
 
-    def draw_heading_vector(self, boid : Boid, vec : pygame.Vector2):
-        """ Supposed to draw a heading-vector in front of the boid """
-        pygame.draw.line(self.screen, (255,0,0),
-                        (boid.pos.x, boid.pos.y),
-                        (boid.pos.x + vec.x,
-                        boid.pos.y + vec.y), 3)
 
     def reset(self):
         """ Reset the game state """
@@ -158,11 +152,6 @@ class Game:
         """ Quit """
         pygame.quit()
 
-def RNG_not_zero(a : int, b : int):
-    rng = rand.randint(a, b)
-    if rng == 0:
-        rng = 1
-    return rng
 
 if __name__ == '__main__':
     game = Game()
