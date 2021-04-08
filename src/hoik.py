@@ -10,8 +10,8 @@ class Hoik(Boid):
         """ Initializing method """
         super().__init__(game, pos)
 
-        self.image = self.game.hoik_img
-        self.rect = self.image.get_rect()
+        self.image = self.game.hoik_img     # Making a copy of the hoik image
+        self.rect = self.image.get_rect()   # Aquiring the bounding box
 
 
     def move(self, move):
@@ -25,33 +25,34 @@ class Hoik(Boid):
 
         self.image = pygame.transform.rotate(self.game.hoik_img, self.angle)
 
+        # Upon hitting a boid, kill that boid
         neighboring_boids = self.get_neighbors()
         for innocent_boid in neighboring_boids:
-            if self.pos.distance_to(innocent_boid.pos) < 20:
+            if self.pos.distance_to(innocent_boid.pos) < 10:
                 innocent_boid.kill()
 
         self.wrap()
 
 
     def alignment(self, neighbors: pygame.sprite.Group) -> pygame.Vector2:
-        # Equivalent to pass just to make no difference to where hoik goes
+        """ Keep going which ever direction you are going """
+        # Equivalent to not making any change in steering
         return self.vel
 
-
-    def cohesion(self, neighbors: pygame.sprite.Group) -> pygame.Vector2:
-        return super().cohesion(neighbors)
-
+    # Inherit cohesion from parent class so that we chase boids
 
     def separation(self, neighbors: pygame.sprite.Group) -> pygame.Vector2:
+        """ Do not try to separate, returns a null-vector, meaning no change """
         return pygame.Vector2()
 
 
     def get_neighbors(self) -> pygame.sprite.Group:
-        """ Code for finding neighbors """
+        """ Find neighboring boids """
         neighbors = pygame.sprite.Group()
         for boid in self.game.all_boids:
             dist = self.pos.distance_to(boid.pos)
             
+            # Hoiks can see 10 times farther than boids
             if dist < 10*VIEW_DISTANCE:
                 neighbors.add(boid)
         return neighbors
