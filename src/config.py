@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # ----- Screen resolution ----- #
 SCREEN_RES = [1280, 720]
 SCREEN_X = SCREEN_RES[0]
@@ -17,6 +18,7 @@ SEPARATION = 4
 BG_COLOR = (0, 30, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+RED = (255, 0, 0)
 
 # ------ Boid constants ------ #
 BOID_SHAPE = [(15, 0), (0, 50), (15, 40), (30, 50), (15, 0)]
@@ -26,6 +28,11 @@ BOID_HEIGHT = 50
 MAX_SPEED = 300           # Maximum speed
 VIEW_DISTANCE = 50         # How far out a boid can "see" another boid
 AVOIDANCE_RADIUS = 30       # How close a boid will get to another boid
+BOIDS_TO_SPAWN = 100
+
+# ---- Hoik constants ---- #
+HOIKS_TO_SPAWN = 1
+MAX_HOIK_SPEED = 350
 
 # -------- Speed limit -------- #
 BOID_SPEED = 250
