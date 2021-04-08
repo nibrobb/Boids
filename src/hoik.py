@@ -7,7 +7,6 @@ from config import *
 class Hoik(Boid):
     """ The Hoik class """
     def __init__(self, game, pos):
-        """ Initializing method """
         super().__init__(game, pos)
 
         self.image = self.game.hoik_img     # Making a copy of the hoik image
