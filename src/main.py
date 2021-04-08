@@ -3,7 +3,6 @@
 # -*- coding: utf-8 -*-
 
 import random as rand
-from typing import Tuple
 import pygame
 from config import *
 from boid import Boid
@@ -21,34 +20,38 @@ class Game:
         # weights index 0, 1 and 2 are respectivly alignment, cohesion and separation
         self.weights = [ALIGNMENT, COHESION, SEPARATION]
 
+
     def initialize(self):
-        """ Denne metoden setter opp alt som trengs for å kjøre simulasjonen """
+        """ Initializes boids and hoiks """
         self.load_boid()
         self.load_hoik()
         self.all_sprites = pygame.sprite.Group()
         self.all_boids = pygame.sprite.Group()
         self.all_hoiks = pygame.sprite.Group()
 
-    def load_boid(self):
-        """ Laster inn en egendefinert boid polygon """
-        # Lager en overflate for å tegne boiden på og setter bakgrunnsfargen gjennomsiktig.
-        boid_original = pygame.Surface([BOID_WIDTH, BOID_HEIGHT], pygame.SRCALPHA)
-        # Tegner en polygon fra punktene definert i config.py med heldekkende fyll
-        pygame.draw.polygon(boid_original, WHITE, BOID_SHAPE, 0)
 
-        # Reduserer størrelsen på boidsa med 40% (dermed skala på 0.6).
+    def load_boid(self):
+        """
+        Loads a predefined set of coordinates and draws a polygon (boid) on a surface
+        """
+
+        # Creates a surface to draw the boid on and sets the background color to transparent
+        boid_original = pygame.Surface([BOID_WIDTH, BOID_HEIGHT], pygame.SRCALPHA)
+        # Draws a polygon from predefined points in config.py with solid fill
+        pygame.draw.polygon(boid_original, WHITE, BOID_SHAPE, 0)
+        # Scales down the size of the boid by 40%
         self.boid_img = pygame.transform.rotozoom(boid_original, 0, 0.6)
 
+
     def load_hoik(self):
-        """ Laster inn og tegner bilde av en hoik til en overflate """
+        """ Loads the same shape as the boid, only this one with a color of red """
         hoik_original = pygame.Surface([BOID_WIDTH, BOID_HEIGHT], pygame.SRCALPHA)
         pygame.draw.polygon(hoik_original, RED, BOID_SHAPE, 0)
         self.hoik_img = pygame.transform.rotozoom(hoik_original, 0, 0.6)
 
 
-
     def run(self):
-        """ Kjøres ved start, holdes kjørende til brukeren avslutter """
+        """ Runs the simulation """
         self.running = True
         self.spawn_boids(BOIDS_TO_SPAWN)
         self.spawn_hoik(HOIKS_TO_SPAWN)
@@ -63,7 +66,7 @@ class Game:
     def events(self):
         """ Event handler """
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT:       # Handle quit event
                 self.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.spawn_boid_on_click()      # Mouse button click spawns boid
@@ -72,6 +75,8 @@ class Game:
                     self.quit()
                 elif event.key == pygame.K_r:   # Press R to restart
                     self.reset()
+
+        # --------------- Weight adjustment --------------- #
         keys = pygame.key.get_pressed()
         if keys[pygame.K_1]:            #
             self.weights[0] -= 0.01     # Decrease alignment
@@ -93,19 +98,19 @@ class Game:
 
 
     def draw(self):
-        """ Draws all boids on the screen """
+        """ Draws all sprites on screen """
         self.screen.fill(BG_COLOR)
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, (sprite.rect.x, sprite.rect.y))
 
-
-        # Print all the weights
-        self.print_info()
+        # Print info like fps, number of boids and hoiks, and weights
+        self.print_info((0,0))
         
         pygame.display.flip()
 
-    def print_info(self, pos : Tuple[int, int] = (0, 0)):
-        """ Prints some info, including weights and fps  """
+
+    def print_info(self, pos):
+        """ Prints info """
         text_size = 20
         font_family = "Comic Sans MS"
 
@@ -182,11 +187,17 @@ class Game:
 
 
     def reset(self):
-        """ Reset the game state """
+        """ Reset game state """
+        self.empty_sprite_gropus()                          # Empties sprite groups
+        self.weights = [ALIGNMENT, COHESION, SEPARATION]    # Resets weights
+        self.spawn_boids(BOIDS_TO_SPAWN)                    # Spawns new boid(s)
+        self.spawn_hoik(HOIKS_TO_SPAWN)                     # Spawns new hoik(s)
+
+    def empty_sprite_gropus(self):
+        """ Empties sprite groups """
+        self.all_boids.empty()
+        self.all_hoiks.empty()
         self.all_sprites.empty()
-        self.weights = [ALIGNMENT, COHESION, SEPARATION]
-        self.spawn_boids(BOIDS_TO_SPAWN)
-        self.spawn_hoik(HOIKS_TO_SPAWN)
 
     def quit(self):
         """ Quit """
