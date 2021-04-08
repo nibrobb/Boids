@@ -1,33 +1,34 @@
+""" Class of boids """
+# -*- coding: utf-8 -*-
 from random import randint
 import pygame
 from config import *
 
 
 class Boid(pygame.sprite.Sprite):
-    """ Boid class """
-    def __init__(self, game, startpos, color = WHITE):
+    """
+    Boid class
+    This class controls all boids in simulation
+    """
+    def __init__(self, game, startpos):
         super().__init__()
 
-        self.game = game
+        self.game = game                    # Game "reference" to more easily access game variables
 
-        self.image = game.boid_img                # Copying the original boid-image
-        self.rect = self.image.get_rect()
-
-        self.color = color
+        self.image = game.boid_img          # Making a copy of the original boid-image
+        self.rect = self.image.get_rect()   # Aquiring the bounding box for the image
 
         self.pos = pygame.Vector2(startpos)
         self.vel = pygame.Vector2(0, 0)
         self.angle = 0                            # Initial rotation of 0 degrees
         self.up_vector = pygame.Vector2(0, -1)    # Vector for the direction of the original image
 
-        # Initial random speed and direction (might delete leater)
+        # Initial random velocity
         self.vel = pygame.Vector2(randint(-BOID_SPEED, BOID_SPEED), randint(-BOID_SPEED, BOID_SPEED))
 
 
     def update(self):
-        """ Update """
-        # TODO: Implement these rules
-
+        """ Gets called once every frame, calls functions to update boid position """
         move = self.calculate_move()
         self.move(move)
 
@@ -37,6 +38,7 @@ class Boid(pygame.sprite.Sprite):
         move = pygame.Vector2()
 
         rules = [self.alignment, self.cohesion, self.separation]
+        partial_move : pygame.Vector2 = pygame.Vector2()
         for i in range(len(rules)):
             partial_move = rules[i](neighbors)
             if (partial_move != pygame.Vector2(0,0)):
@@ -48,7 +50,7 @@ class Boid(pygame.sprite.Sprite):
 
 
     def move(self, move):
-        """ Calculate the next position and rotate image """
+        """ Set the next position and rotate image accordingly """
         self.vel += move
         if self.vel.magnitude() > MAX_SPEED:
             self.vel = self.vel.normalize() * MAX_SPEED
@@ -130,7 +132,7 @@ class Boid(pygame.sprite.Sprite):
     def get_neighbors(self) -> pygame.sprite.Group:
         """ Code for finding neighbors """
         neighbors = pygame.sprite.Group()
-        for boid in self.game.all_sprites:
+        for boid in self.game.all_boids:
             dist = self.pos.distance_to(boid.pos)
             # Add a boid to the neighbors group if they are within "line of sight"
             if self.pos != boid.pos and dist < VIEW_DISTANCE:
