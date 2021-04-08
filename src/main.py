@@ -149,6 +149,7 @@ class Game:
         background_width = 0
         background_height = 0
 
+        # Iterate through all surfaces in list and find max width and height for background
         for surface in text_list:
             background_width = max(background_width, surface.get_width())
             background_height += surface.get_height()
@@ -157,9 +158,11 @@ class Game:
         background.fill(BLACK)
         self.screen.blit(background, pos)
 
+        # Iterate through the list of surfaces and draw them one by one, with an offset
         for text in text_list:
             self.screen.blit(text, (pos[0] + 4, pos[1] + offset))
             offset += text.get_height()
+
 
     def spawn_boid_on_click(self):
         """ Spawn a single boid at mouse position """
@@ -168,6 +171,7 @@ class Game:
         self.all_boids.add(boid)
         self.all_sprites.add(boid)
 
+
     def spawn_boids(self, n_boids : int):
         """ Spawn `n' amount of boids at random positions """
         for i in range(n_boids):
@@ -175,7 +179,8 @@ class Game:
                                rand.randint(0, SCREEN_Y)))
             self.all_boids.add(boid)
             self.all_sprites.add(boid)
-        
+
+
     def spawn_hoik(self, n_hoiks : int):
         """ Spawn a n hoiks """
         for i in range(n_hoiks):
@@ -185,7 +190,6 @@ class Game:
             self.all_sprites.add(hoik)
 
 
-
     def reset(self):
         """ Reset game state """
         self.empty_sprite_gropus()                          # Empties sprite groups
@@ -193,11 +197,13 @@ class Game:
         self.spawn_boids(BOIDS_TO_SPAWN)                    # Spawns new boid(s)
         self.spawn_hoik(HOIKS_TO_SPAWN)                     # Spawns new hoik(s)
 
+
     def empty_sprite_gropus(self):
         """ Empties sprite groups """
         self.all_boids.empty()
         self.all_hoiks.empty()
         self.all_sprites.empty()
+
 
     def quit(self):
         """ Quit """
@@ -207,5 +213,5 @@ class Game:
 if __name__ == '__main__':
     game = Game()
     while True:
-        game.initialize()
-        game.run()
+        game.initialize()       # Initialize simulation
+        game.run()              # Run simulation
