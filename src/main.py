@@ -1,3 +1,4 @@
+""" Simple boid simulation made by Robin Kristiansen (c) 2021 """
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -6,6 +7,7 @@ from typing import Tuple
 import pygame
 from config import *
 from boid import Boid
+from hoik import Hoik
 
 
 class Game:
@@ -22,7 +24,10 @@ class Game:
     def initialize(self):
         """ Denne metoden setter opp alt som trengs for å kjøre simulasjonen """
         self.load_boid()
+        self.load_hoik()
         self.all_sprites = pygame.sprite.Group()
+        self.all_boids = pygame.sprite.Group()
+        self.all_hoiks = pygame.sprite.Group()
 
     def load_boid(self):
         """ Laster inn en egendefinert boid polygon """
@@ -31,16 +36,22 @@ class Game:
         # Tegner en polygon fra punktene definert i config.py med heldekkende fyll
         pygame.draw.polygon(boid_original, WHITE, BOID_SHAPE, 0)
 
-        # self.boid_img = pygame.transform.scale(self.boid_img, [int(0.9*BOID_WIDTH), int(0.9*BOID_HEIGHT)])
         # Reduserer størrelsen på boidsa med 40% (dermed skala på 0.6).
         self.boid_img = pygame.transform.rotozoom(boid_original, 0, 0.6)
+
+    def load_hoik(self):
+        """ Laster inn og tegner bilde av en hoik til en overflate """
+        hoik_original = pygame.Surface([BOID_WIDTH, BOID_HEIGHT], pygame.SRCALPHA)
+        pygame.draw.polygon(hoik_original, RED, BOID_SHAPE, 0)
+        self.hoik_img = pygame.transform.rotozoom(hoik_original, 0, 0.6)
 
 
 
     def run(self):
         """ Kjøres ved start, holdes kjørende til brukeren avslutter """
         self.running = True
-        self.spawn_boids(100)
+        self.spawn_boids(BOIDS_TO_SPAWN)
+        self.spawn_hoik(HOIKS_TO_SPAWN)
 
         while self.running:
             self.delta_time = self.clock.tick(FPS) / 1000.0
@@ -54,26 +65,26 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.quit()
-            if event.type == pygame.MOUSEBUTTONUP:
-                self.spawn_boid_on_click()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.spawn_boid_on_click()      # Mouse button click spawns boid
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
+                if event.key == pygame.K_q:     # Press Q to quit
                     self.quit()
-                elif event.key == pygame.K_r:
+                elif event.key == pygame.K_r:   # Press R to restart
                     self.reset()
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_1]:
-            self.weights[0] -= 0.01
-        if keys[pygame.K_2]:
-            self.weights[0] += 0.01
-        if keys[pygame.K_3]:
-            self.weights[1] -= 0.01
-        if keys[pygame.K_4]:
-            self.weights[1] += 0.01
-        if keys[pygame.K_5]:
-            self.weights[2] -= 0.01
-        if keys[pygame.K_6]:
-            self.weights[2] += 0.01
+        if keys[pygame.K_1]:            #
+            self.weights[0] -= 0.01     # Decrease alignment
+        if keys[pygame.K_2]:            #
+            self.weights[0] += 0.01     # Increase alignment
+        if keys[pygame.K_3]:            #
+            self.weights[1] -= 0.01     # Decrease cohesion
+        if keys[pygame.K_4]:            #
+            self.weights[1] += 0.01     # Increase cohesion
+        if keys[pygame.K_5]:            #
+            self.weights[2] -= 0.01     # Decrease separation
+        if keys[pygame.K_6]:            #
+            self.weights[2] += 0.01     # Increase separation
 
 
     def update(self):
@@ -95,43 +106,61 @@ class Game:
 
     def print_info(self, pos : Tuple[int, int] = (0, 0)):
         """ Prints some info, including weights and fps  """
-        text_size = SCREEN_Y//54
+        text_size = 20
         font_family = "Comic Sans MS"
 
-        fps_font = pygame.font.SysFont(font_family, text_size)
-        fps_surface = fps_font.render(f"Frame rate: {self.clock.get_fps():.0f}", True,  WHITE)
+        info_text = []
 
-        align_font = pygame.font.SysFont(font_family, text_size)
-        align_surface = align_font.render(f"Alignment weight: {self.weights[0]:.2f}", True, WHITE)
+        fps_text = self.setup_font("Frame rate: {:.0f}".format(self.clock.get_fps()), font_family, text_size, WHITE)
+        info_text.append(fps_text)
 
-        coh_font = pygame.font.SysFont(font_family, text_size)
-        coh_surface = coh_font.render(f"Cohesion weight: {self.weights[1]:.2f}", True, WHITE)
+        amount_of_boids = self.setup_font("Boids: {}".format(len(self.all_boids)), font_family, text_size, WHITE)
+        info_text.append(amount_of_boids)
 
-        sep_font = pygame.font.SysFont(font_family, text_size)
-        sep_surface = sep_font.render(f"Separation weight: {self.weights[2]:.2f}", True, WHITE)
+        amount_of_hoiks = self.setup_font("Hoiks: {}".format(len(self.all_hoiks)), font_family, text_size, WHITE)
+        info_text.append(amount_of_hoiks)
 
-        background = pygame.Surface((max(fps_surface.get_width(),
-                                        align_surface.get_width(),
-                                        coh_surface.get_width(),
-                                        sep_surface.get_width() + 8),
-                                        (fps_surface.get_height() +
-                                        align_surface.get_height() +
-                                        coh_surface.get_height() +
-                                        sep_surface.get_height() + 8)))
-        background.fill((0,0,0))
+        alignment_text = self.setup_font("Alignment weight: {:.2f}".format(self.weights[0]), font_family, text_size, WHITE)
+        info_text.append(alignment_text)
 
+        cohesion_text = self.setup_font("Cohesion weight: {:.2f}".format(self.weights[1]), font_family, text_size, WHITE)
+        info_text.append(cohesion_text)
+
+        separation_text = self.setup_font("Separation weight: {:.2f}".format(self.weights[2]), font_family, text_size, WHITE)
+        info_text.append(separation_text)
+        
+        self.blit_text(info_text, pos)
+
+
+    def setup_font(self, text, font, size, color) -> pygame.Surface:
+        """ Returns a surface with the chosen text """
+        text_font = pygame.font.SysFont(font, size)
+        text_surface = text_font.render(text, True, color)
+        return text_surface
+
+    def blit_text(self, text_list, pos):
+        """ Prints all the text in text_list to the screen """
+        offset = 0
+        background_width = 0
+        background_height = 0
+
+        for surface in text_list:
+            background_width = max(background_width, surface.get_width())
+            background_height += surface.get_height()
+
+        background = pygame.Surface((background_width + 8, background_height + 8))
+        background.fill(BLACK)
         self.screen.blit(background, pos)
 
-        self.screen.blit(fps_surface,   (pos[0] + 4, pos[1]))
-        self.screen.blit(align_surface, (pos[0] +4, pos[1] + fps_surface.get_height() ) )
-        self.screen.blit(coh_surface,   (pos[0] +4, pos[1] + fps_surface.get_height() + align_surface.get_height() ) )
-        self.screen.blit(sep_surface,   (pos[0] +4, pos[1] + fps_surface.get_height() + align_surface.get_height() + coh_surface.get_height() ) )
-
+        for text in text_list:
+            self.screen.blit(text, (pos[0] + 4, pos[1] + offset))
+            offset += text.get_height()
 
     def spawn_boid_on_click(self):
         """ Spawn a single boid at mouse position """
         pos = pygame.mouse.get_pos()
         boid = Boid(self, pos)
+        self.all_boids.add(boid)
         self.all_sprites.add(boid)
 
     def spawn_boids(self, n_boids : int):
@@ -139,14 +168,25 @@ class Game:
         for i in range(n_boids):
             boid = Boid(self, (rand.randint(0, SCREEN_X),
                                rand.randint(0, SCREEN_Y)))
+            self.all_boids.add(boid)
             self.all_sprites.add(boid)
+        
+    def spawn_hoik(self, n_hoiks : int):
+        """ Spawn a n hoiks """
+        for i in range(n_hoiks):
+            hoik = Hoik(self, (rand.randint(0, SCREEN_X),
+                            rand.randint(0, SCREEN_Y) ) )
+            self.all_hoiks.add(hoik)
+            self.all_sprites.add(hoik)
+
 
 
     def reset(self):
         """ Reset the game state """
         self.all_sprites.empty()
         self.weights = [ALIGNMENT, COHESION, SEPARATION]
-        self.spawn_boids(100)
+        self.spawn_boids(BOIDS_TO_SPAWN)
+        self.spawn_hoik(HOIKS_TO_SPAWN)
 
     def quit(self):
         """ Quit """
