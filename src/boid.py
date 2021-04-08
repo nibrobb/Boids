@@ -65,9 +65,6 @@ class Boid(pygame.sprite.Sprite):
     # Rule no. 1
     def alignment(self, neighbors : pygame.sprite.Group) -> pygame.Vector2:
         """ Steer towards the average direction of nearby boids """
-        # Makes boids steer to the average heading of neighbors
-        # Skal innrømme at æ henta mye inspirasjon fra Board To Bits Games
-        #       Kilde: https://youtu.be/7LDFLMRGyqs
 
         # If no neighbors, maintain our current heading
         if len(neighbors) == 0:
