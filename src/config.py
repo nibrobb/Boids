@@ -25,9 +25,9 @@ BOID_SHAPE = [(15, 0), (0, 50), (15, 40), (30, 50), (15, 0)]
 BOID_WIDTH = 30
 BOID_HEIGHT = 50
 
-MAX_SPEED = 300           # Maximum speed
-VIEW_DISTANCE = 50         # How far out a boid can "see" another boid
-AVOIDANCE_RADIUS = 30       # How close a boid will get to another boid
+MAX_SPEED = 300
+VIEW_DISTANCE = 50
+AVOIDANCE_RADIUS = 30
 BOIDS_TO_SPAWN = 100
 
 # ---- Hoik constants ---- #
