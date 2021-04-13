@@ -4,6 +4,9 @@
 # Dia temporary files
 **.**~
 
+# Temporary Word file
+*.tmp
+
 # Byte-compiled / optimized / DLL files
 **__pycache__/
 *.py[cod]
