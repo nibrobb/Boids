@@ -3,6 +3,7 @@
 
 # Dia temporary files
 **.**~
+*.autosave
 
 # Temporary Word file
 *.tmp
