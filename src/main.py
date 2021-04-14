@@ -1,6 +1,6 @@
-""" Simple boid simulation made by Robin Kristiansen (c) 2021 """
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+""" Simple boid simulation made by Robin Kristiansen (c) 2021 """
 
 import random as rand
 import pygame
