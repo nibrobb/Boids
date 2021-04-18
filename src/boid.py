@@ -43,7 +43,7 @@ class Boid(pygame.sprite.Sprite):
         partial_move : pygame.Vector2 = pygame.Vector2()
         for i in range(len(rules)):
             partial_move = rules[i](neighbors)     # Call each rule and save result as partial_move
-            if (partial_move != pygame.Vector2(0,0)): # Null-check vector
+            if partial_move != pygame.Vector2(0,0): # Null-check vector
                 if partial_move.magnitude() > self.game.weights[i]:
                     # If partial_move is greater than its respective weight
                     #     normalize it and multiply by its respective weight
@@ -84,7 +84,7 @@ class Boid(pygame.sprite.Sprite):
     # Rule no. 2
     def cohesion(self, neighbors : pygame.sprite.Group) -> pygame.Vector2:
         """ Steer towards the center of mass of nearby boids """
-        
+
         # Find average position of neighboring boids
         if len(neighbors) == 0:
             return self.vel
@@ -96,7 +96,7 @@ class Boid(pygame.sprite.Sprite):
         cohesion_move -= self.pos # Getting the offset from the position boid(self) is right now
         return cohesion_move
 
-    
+
     # Rule no. 3
     def separation(self, neighbors : pygame.sprite.Group) -> pygame.Vector2:
         """ Steer to avoid crowding """
@@ -111,14 +111,14 @@ class Boid(pygame.sprite.Sprite):
         n_avoid = 0                 # Variable for storing number of "annoying neighbors"
 
         for neighbor in neighbors:
-            if (neighbor.pos.distance_to(self.pos) < AVOIDANCE_RADIUS):
+            if neighbor.pos.distance_to(self.pos) < AVOIDANCE_RADIUS:
                 n_avoid += 1
                 separation_move += (self.pos - neighbor.pos)
                 # We are adding to separation_move the differance between our(self) position
                 # and the neighboring (too close) boid
                 # This will consequently make separation_move opposite of the average position
                 #   of neighboring boids that are too close
-        
+
         if n_avoid > 0:
             separation_move /= n_avoid
             # Taking the average
@@ -137,6 +137,8 @@ class Boid(pygame.sprite.Sprite):
 
 
     def wrap(self):
-        """ Cheap way of wrapping boids around to the other side of the window when they hit a wall """
+        """
+        Cheap way of wrapping boids around to the other side of the window when they hit a wall
+        """
         self.pos.x %= SCREEN_X
         self.pos.y %= SCREEN_Y
