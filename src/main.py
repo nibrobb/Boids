@@ -30,7 +30,7 @@ class Game:
         self.all_hoiks = pygame.sprite.Group()
 
 
-    def load_boid(self):
+    def load_boid(self) -> None:
         """
         Loads a predefined set of coordinates and draws a polygon (boid) on a surface
         """
@@ -43,14 +43,14 @@ class Game:
         self.boid_img = pygame.transform.rotozoom(boid_original, 0, 0.6)
 
 
-    def load_hoik(self):
+    def load_hoik(self) -> None:
         """ Loads the same shape as the boid, only this one with a color of red """
         hoik_original = pygame.Surface([BOID_WIDTH, BOID_HEIGHT], pygame.SRCALPHA)
         pygame.draw.polygon(hoik_original, RED, BOID_SHAPE, 0)
         self.hoik_img = pygame.transform.rotozoom(hoik_original, 0, 0.6)
 
 
-    def run(self):
+    def run(self) -> None:
         """ Runs the simulation """
         self.running = True
         self.spawn_boids(BOIDS_TO_SPAWN)
@@ -63,7 +63,7 @@ class Game:
             self.draw()
 
 
-    def events(self):
+    def events(self) -> None:
         """ Event handler """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:       # Handle quit event
@@ -92,12 +92,12 @@ class Game:
             self.weights[2] += 0.01     # Increase separation
 
 
-    def update(self):
+    def update(self) -> None:
         """ Updates sprites """
         self.all_sprites.update()
 
 
-    def draw(self):
+    def draw(self) -> None:
         """ Draws all sprites on screen """
         self.screen.fill(BG_COLOR)
         for sprite in self.all_sprites:
@@ -109,7 +109,7 @@ class Game:
         pygame.display.flip()
 
 
-    def print_info(self, pos):
+    def print_info(self, pos) -> None:
         """ Prints info """
         text_size = 20
         font_family = "Comic Sans MS"
@@ -143,7 +143,7 @@ class Game:
         text_surface = text_font.render(text, True, color)
         return text_surface
 
-    def blit_text(self, text_list, pos):
+    def blit_text(self, text_list, pos) -> None:
         """ Prints all the text in text_list to the screen """
         offset = 0
         background_width = 0
@@ -164,7 +164,7 @@ class Game:
             offset += text.get_height()
 
 
-    def spawn_boid_on_click(self):
+    def spawn_boid_on_click(self) -> None:
         """ Spawn a single boid at mouse position """
         pos = pygame.mouse.get_pos()
         boid = Boid(self, pos)
@@ -172,7 +172,7 @@ class Game:
         self.all_sprites.add(boid)
 
 
-    def spawn_boids(self, n_boids : int):
+    def spawn_boids(self, n_boids : int) -> None:
         """ Spawn `n' amount of boids at random positions """
         for i in range(n_boids):
             boid = Boid(self, (rand.randint(0, SCREEN_X),
@@ -181,7 +181,7 @@ class Game:
             self.all_sprites.add(boid)
 
 
-    def spawn_hoik(self, n_hoiks : int):
+    def spawn_hoik(self, n_hoiks : int) -> None:
         """ Spawn a n hoiks """
         for i in range(n_hoiks):
             hoik = Hoik(self, (rand.randint(0, SCREEN_X),
@@ -190,7 +190,7 @@ class Game:
             self.all_sprites.add(hoik)
 
 
-    def reset(self):
+    def reset(self) -> None:
         """ Reset game state """
         self.empty_sprite_gropus()                          # Empties sprite groups
         self.weights = [ALIGNMENT, COHESION, SEPARATION]    # Resets weights
@@ -198,14 +198,14 @@ class Game:
         self.spawn_hoik(HOIKS_TO_SPAWN)                     # Spawns new hoik(s)
 
 
-    def empty_sprite_gropus(self):
+    def empty_sprite_gropus(self) -> None:
         """ Empties sprite groups """
         self.all_boids.empty()
         self.all_hoiks.empty()
         self.all_sprites.empty()
 
 
-    def quit(self):
+    def quit(self) -> None:
         """ Quit """
         pygame.quit()
 
